@@ -1,34 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SkillCert — Skill Validation</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <title>SkillCert — Skill Validation</</title>
+
+  <!-- Tailwind (for quick, modern UI) -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- html2pdf -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <style>
     body{background:#f5f6fa;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-    .cert-container{width:100%;max-width:1100px;margin:0 auto;background:#fff;border:6px solid #d4af37;border-radius:20px;padding:40px;position:relative}
+    /* Certificate card */
+    .cert-container{
+      width:100%;
+      max-width:1100px;
+      margin:0 auto;
+      background:#fff;
+      border:6px solid #d4af37;     /* gold frame */
+      border-radius:20px;
+      padding:40px;
+      position:relative;
+      overflow:hidden;               /* prevent clip issues in export */
+    }
+    /* Title */
     .cert-title{font-size:52px;font-weight:800;letter-spacing:.1em;color:#4b3621}
+    /* Divider */
     .fancy-hr{height:2px;background:linear-gradient(90deg,transparent,#3b82f6,transparent)}
-    .medal{background:radial-gradient(circle at 30% 30%,#ffd966,#d4af37);height:52px;width:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#4b3621;box-shadow:0 4px 8px rgba(0,0,0,.1)}
-    @media (max-width:768px){.cert-container{padding:20px}#certName{font-size:48px}}
+    /* Medal */
+    .medal{
+      background:radial-gradient(circle at 30% 30%,#ffd966,#d4af37);
+      height:52px;width:52px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-weight:700;font-size:20px;color:#4b3621;
+      box-shadow:0 4px 8px rgba(0,0,0,.1)
+    }
+    @media (max-width:768px){
+      .cert-container{padding:20px}
+      #certName{font-size:48px}
+    }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-start p-4">
+<body class="min-h-screen flex flex-col items-center p-4">
 
-  <!-- HEADER -->
+  <!-- Header -->
   <header class="text-center mb-10">
     <h1 class="text-4xl font-extrabold text-gray-800 mb-2">SkillCert — Online Skill Test</h1>
     <p class="text-gray-500">Take a quick skill test and get your professional certificate instantly</p>
   </header>
 
-  <!-- USER INPUTS -->
+  <!-- User details + skill select -->
   <section class="w-full max-w-lg bg-white rounded-xl shadow p-6 mb-8">
     <h2 class="text-xl font-semibold mb-4">Your Details</h2>
 
-    <label class="block mb-3 text-sm font-medium">Full Name
-      <input id="fullName" class="mt-1 w-full border rounded px-3 py-2" placeholder="Enter your name" />
+    <label class="block mb-3 text-sm font-medium">
+      Full Name
+      <input id="fullName" class="mt-1 w-full border rounded px-3 py-2" placeholder="Enter your name"/>
     </label>
 
     <h2 class="text-xl font-semibold mt-4 mb-2">Select a Skill</h2>
@@ -51,7 +79,7 @@
     </button>
   </section>
 
-  <!-- QUIZ -->
+  <!-- Quiz -->
   <section id="quizSection" class="w-full max-w-xl bg-white rounded-xl shadow p-6 hidden">
     <h2 class="text-xl font-semibold mb-4">Skill Quiz</h2>
     <p id="quizSkillLabel" class="text-sm text-gray-500 mb-2"></p>
@@ -61,13 +89,13 @@
     </button>
   </section>
 
-  <!-- FAIL MESSAGE -->
+  <!-- Fail -->
   <div id="failMessage" class="hidden mt-6 text-center">
     <p class="text-red-600 font-semibold mb-3">❌ You scored below 80%. Please try again!</p>
     <button id="retakeBtn" class="bg-blue-600 text-white px-4 py-2 rounded">Retake Quiz</button>
   </div>
 
-  <!-- CERTIFICATE -->
+  <!-- Certificate -->
   <section id="certificateSection" class="hidden w-full flex justify-center mt-10">
     <div id="certCard" class="cert-container">
       <div class="flex flex-col h-full">
@@ -77,7 +105,9 @@
           <div class="mt-1 text-[13px] tracking-[0.25em] text-slate-600 font-semibold">
             OF COMPLETING A SKILL VALIDATION TEST
           </div>
-          <div class="mt-5 text-[12px] tracking-wide text-slate-500">This Official Credential Is Conferred Upon</div>
+          <div class="mt-5 text-[12px] tracking-wide text-slate-500">
+            This Official Credential Is Conferred Upon
+          </div>
           <div id="certName" class="mt-2 text-[64px] font-extrabold text-blue-700 capitalize">Name</div>
         </div>
 
@@ -89,7 +119,7 @@
           <b id="certScore">100%</b>, thereby securing the highly-coveted <b id="certLevel">Advanced</b> level certification.
         </div>
 
-        <!-- Footer -->
+        <!-- Footer (centered) -->
         <div class="mt-8 flex flex-col items-center justify-center gap-2">
           <div id="medal" class="medal">1</div>
           <div class="text-[12px] text-slate-500 leading-tight text-center">
@@ -98,21 +128,32 @@
           <div class="text-[12px] text-slate-500 leading-tight text-center">
             UID: <span id="certUID">—</span>
           </div>
+
+          <!-- Inline SVG Logo (no CORS issues) -->
           <div class="mt-1 flex items-center gap-2">
-            <img src="assets/logo.svg" class="h-7 w-7" alt="logo">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="11" fill="#1e40af" opacity=".15"/>
+              <path d="M7 12l3 3 7-7" stroke="#1e40af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
             <div class="text-[26px] font-extrabold"
                  style="background:linear-gradient(90deg,#1e40af,#3b82f6);-webkit-background-clip:text;color:transparent">
               SkillCert
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </section>
 
+  <!-- Download again button -->
+  <div id="downloadRow" class="hidden mt-6">
+    <button id="downloadBtn" class="bg-indigo-600 text-white px-5 py-2 rounded hover:bg-indigo-700">
+      Download PDF Again
+    </button>
+  </div>
+
 <script>
-/* ------------------ Question bank for each skill (5 Q each) ------------------ */
+/* ------------------ Question bank (5 per skill) ------------------ */
 const quizData = {
   "Java":[
     {q:"What is Java mainly used for?",a:["AI","Web","Games","Design"],c:1},
@@ -125,7 +166,7 @@ const quizData = {
     {q:"Angular is a…",a:["Language","Framework","Database","Runtime"],c:1},
     {q:"Two-way binding uses…",a:["[]","()","[()]","{}"],c:2},
     {q:"Service is injected using…",a:["DI","AJAX","SSR","CSR"],c:0},
-    {q:"Angular CLI command to create component?",a:["ng c","ng g c","ng n c","ng new c"],c:1},
+    {q:"CLI command to create component?",a:["ng c","ng g c","ng n c","ng new c"],c:1},
     {q:"Template syntax is…",a:["{{ }}","[[ ]]","<< >>","( )"],c:0}
   ],
   "React":[
@@ -186,14 +227,14 @@ const quizData = {
   ]
 };
 
-/* ------------------ Helpers ------------------ */
-const $ = (s)=>document.querySelector(s);
+const $ = s => document.querySelector(s);
 const quizSection = $("#quizSection"), quizForm = $("#quizForm");
 const submitBtn = $("#submitQuiz"), startBtn = $("#startQuiz");
 const failMessage = $("#failMessage"), retakeBtn = $("#retakeBtn");
 const certificateSection = $("#certificateSection");
+const downloadRow = $("#downloadRow"), downloadBtn = $("#downloadBtn");
 
-/* ------------------ Start quiz ------------------ */
+/* Start quiz */
 startBtn.addEventListener("click", ()=>{
   const name = $("#fullName").value.trim();
   const skill = $("#skillSelect").value;
@@ -207,7 +248,7 @@ startBtn.addEventListener("click", ()=>{
   window.scrollTo({top: quizSection.offsetTop-20, behavior: "smooth"});
 });
 
-/* ------------------ Build quiz UI ------------------ */
+/* Build quiz */
 function generateQuiz(skill){
   quizForm.innerHTML = "";
   const items = quizData[skill];
@@ -225,34 +266,35 @@ function generateQuiz(skill){
     quizForm.appendChild(block);
   });
 
-  // attach submit
   submitBtn.onclick = ()=> gradeQuiz(skill);
 }
 
-/* ------------------ Grade & either show cert or fail ------------------ */
+/* Grade */
 function gradeQuiz(skill){
   const items = quizData[skill];
-  let score = 0;
-  for (let i=0;i<items.length;i++){
+  let correct = 0;
+  for(let i=0;i<items.length;i++){
     const chosen = (quizForm[`q${i}`] || {}).value;
-    if (chosen !== undefined && Number(chosen) === items[i].c) score++;
+    if(chosen!==undefined && Number(chosen)===items[i].c) correct++;
   }
-  const pct = Math.round((score/items.length)*100);
+  const pct = Math.round((correct/items.length)*100);
 
-  if (pct >= 80){
+  if(pct>=80){
     buildCertificate(skill, pct);
     certificateSection.classList.remove("hidden");
     failMessage.classList.add("hidden");
     quizSection.classList.add("hidden");
+    downloadRow.classList.remove("hidden");
     setTimeout(downloadPDF, 600);
-  } else {
+  }else{
     certificateSection.classList.add("hidden");
     failMessage.classList.remove("hidden");
     quizSection.classList.add("hidden");
+    downloadRow.classList.add("hidden");
   }
 }
 
-/* ------------------ Certificate data fill ------------------ */
+/* Fill certificate */
 function buildCertificate(skill, pct){
   const name = $("#fullName").value.trim();
   const level = pct>=93 ? "Advanced" : (pct>=85 ? "Proficient" : "Intermediate");
@@ -266,24 +308,34 @@ function buildCertificate(skill, pct){
   $("#medal").textContent = medal;
 }
 
-/* ------------------ Utilities ------------------ */
+/* UID */
 function makeUID(n=8){
   const s="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let o="";
   for(let i=0;i<n;i++) o+=s[Math.floor(Math.random()*s.length)];
   return o;
 }
 
-/* ----------------- Download as PDF ----------------- */
+/* ---------- Mobile-safe PDF export: render a fixed A4 clone off-screen ---------- */
 function downloadPDF () {
-  const el = document.getElementById('certCard');
+  const src = document.getElementById('certCard');
 
-  // Scroll to top and force a fixed A4 width while rendering
-  window.scrollTo(0, 0);
-  const prevMax = el.style.maxWidth;
-  const prevWidth = el.style.width;
-  el.style.maxWidth = 'none';
-  el.style.width = '794px';     // A4 width at 96 DPI
-  el.style.padding = el.style.padding || '40px';
+  // create off-screen A4 clone (prevents cropping / blank pdf on phones)
+  const clone = src.cloneNode(true);
+  clone.id = 'certCardClone';
+  Object.assign(clone.style, {
+    width: '794px',           // A4 width @ 96dpi
+    minHeight: '1123px',      // A4 height
+    boxSizing: 'border-box',
+    padding: '40px',
+    position: 'absolute',
+    left: '-10000px',
+    top: '0',
+    margin: '0',
+    maxWidth: 'none',
+    overflow: 'hidden',
+    background: '#ffffff'
+  });
+  document.body.appendChild(clone);
 
   const opts = {
     margin: 0,
@@ -294,27 +346,26 @@ function downloadPDF () {
       useCORS: true,
       scrollX: 0,
       scrollY: 0,
-      windowWidth: 794
+      windowWidth: 794,
+      windowHeight: 1123
     },
-    jsPDF: { unit: 'px', format: 'a4', orientation: 'portrait' },
-    pagebreak: { mode: ['css', 'avoid-all'] }
+    jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' },
+    pagebreak: { mode: ['css','avoid-all'] }
   };
 
+  window.scrollTo(0,0);
+
   html2pdf()
-    .from(el)
+    .from(clone)
     .set(opts)
     .save()
-    .then(() => {
-      el.style.maxWidth = prevMax || '';
-      el.style.width = prevWidth || '';
-    })
-    .catch(() => {
-      el.style.maxWidth = prevMax || '';
-      el.style.width = prevWidth || '';
-    });
+    .finally(()=> clone.remove());
 }
 
-/* ------------------ Retake ------------------ */
+/* Manual download button */
+downloadBtn?.addEventListener('click', downloadPDF);
+
+/* Retake */
 retakeBtn.addEventListener("click", ()=> location.reload());
 </script>
 </body>
