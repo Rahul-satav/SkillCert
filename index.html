@@ -7,8 +7,11 @@
   <meta name="description" content="Get a professional, recruiter-ready certificate by passing a quick 5-question skill test. Perfect for resume and jobs."/>
   <link rel="icon" href="assets/logo.svg"/>
 
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <!-- Export libs -->
   <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -24,7 +27,7 @@
     .card { transition: transform .15s ease, box-shadow .2s ease; }
     .card:hover { transform: translateY(-3px); box-shadow: 0 25px 40px rgba(2,6,23,.10); }
 
-    /* fixed certificate canvas */
+    /* ===== Fixed A4 landscape canvas (identical on phone & desktop) ===== */
     .cert-canvas { width:1654px; height:1169px; }
     .cert-canvas * { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 
@@ -50,12 +53,13 @@
       display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:28px;border:4px solid #fef08a;
     }
 
+    /* modal */
     .modal{ display:none; } .modal.show{ display:flex; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <!-- header -->
+  <!-- Header -->
   <header class="bg-white/80 backdrop-blur border-b">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2">
@@ -70,7 +74,7 @@
     </div>
   </header>
 
-  <!-- hero -->
+  <!-- Hero -->
   <section class="hero text-white border-b">
     <div class="max-w-6xl mx-auto px-4 py-12">
       <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">🚀 Get Instant Verified Certificates</h1>
@@ -85,7 +89,7 @@
 
   <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
 
-    <!-- skills -->
+    <!-- Skills -->
     <section id="skills" class="rounded-2xl border bg-white p-4">
       <div class="flex items-center justify-between">
         <h2 class="text-base font-semibold">Choose Your Skill</h2>
@@ -94,7 +98,7 @@
       <div id="skillsGrid" class="mt-3 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2"></div>
     </section>
 
-    <!-- details -->
+    <!-- Details -->
     <section id="form" class="rounded-2xl border bg-white p-4">
       <h2 class="text-base font-semibold mb-3">Your Details</h2>
       <div class="grid sm:grid-cols-3 gap-3">
@@ -116,7 +120,7 @@
       </div>
     </section>
 
-    <!-- quiz -->
+    <!-- Quiz -->
     <section id="quiz" class="hidden rounded-2xl border bg-white p-4">
       <div class="flex items-center justify-between">
         <h2 class="text-base font-semibold">Quick Test • <span id="quizSkill"></span></h2>
@@ -129,12 +133,12 @@
       </div>
     </section>
 
-    <!-- certificate preview (scaled on screen only) -->
+    <!-- Certificate Preview (scaled visually only) -->
     <section id="certArea" class="hidden">
       <div class="mx-auto w-full overflow-auto flex justify-center">
         <div class="origin-top scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-[0.9]">
           <div id="certCard" class="relative cert-paper cert-canvas overflow-hidden">
-            <!-- ornaments -->
+            <!-- Ornaments -->
             <div class="orn tl"><svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
             <div class="orn tr"><svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
             <div class="orn bl"><svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
@@ -142,7 +146,7 @@
 
             <div class="cert-inner rounded-[12px]">
               <div class="h-full w-full p-12 flex flex-col">
-                <!-- headings -->
+                <!-- Headings -->
                 <div class="text-center">
                   <div class="text-[58px] font-extrabold cert-title tracking-[.08em]">CERTIFICATE</div>
                   <div class="mt-1 text-[16px] tracking-[0.25em] text-slate-600 font-semibold">OF TAKING SKILL TEST</div>
@@ -150,21 +154,17 @@
                   <div id="certName" class="mt-2 text-[72px] font-extrabold text-[#3157d4] capitalize">Candidate</div>
                 </div>
 
-                <!-- rule -->
+                <!-- Rule -->
                 <div class="mx-[120px] mt-6"><div class="fancy-hr"></div></div>
 
-                <!-- body -->
-               <div class="mt-6 text-center text-[18px] text-slate-700 leading-relaxed px-[120px]">
-                  Has **demonstrated superior capability** by successfully completing the **rigorous**                   **<b id="certSkill">Skill</b>** skill test,
-                  **surpassing performance expectations** with an **outstanding result** of <b id="certScore">80%</b>, 
-                  and earning the **prestigious <b id="certLevel">Proficient</b> level certification.**
-                  <br><br>
-                  This **benchmark achievement** confirms a **deep-seated competence** and **professional readiness**
-                  that is **highly valued and recognized** across the industry by multinational technology firms such as 
-                  **Google, Amazon Web Services (AWS), Microsoft Azure, Meta, and Oracle.**
-                </div>
+                <!-- Body -->
+                <div class="mt-6 text-center text-[18px] text-slate-700 leading-relaxed px-[120px]">
+                  Has successfully completed the <b id="certSkill">Skill</b> skill test,
+                  demonstrating exceptional professional expertise with a score
+                  <b id="certScore">80%</b>, earning a <b id="certLevel">Proficient</b> level certification.
+                </div>
 
-                <!-- footer -->
+                <!-- Footer -->
                 <div class="mt-auto grid grid-cols-2 gap-6 px-[70px] pb-[28px]">
                   <div class="flex items-center gap-4">
                     <div id="medal" class="medal">2</div>
@@ -176,14 +176,20 @@
 
                   <div class="flex items-end justify-end">
                     <div class="text-right leading-tight">
-                      <!-- brand -->
+                      <!-- Brand -->
                       <div class="flex items-center justify-end gap-2">
                         <img src="assets/logo.svg" class="h-7 w-7" alt="logo">
                         <div class="text-[28px] font-bold" style="background:linear-gradient(90deg,#2563eb,#06b6d4); -webkit-background-clip:text; color:transparent">SkillCert</div>
                       </div>
-                      <!-- NEW: UID + Verify line printed on certificate -->
+                      <!-- Clean Verify line (short text; link points to full encoded URL) -->
                       <div class="mt-1 text-[12px] text-slate-500 leading-tight">
-                      UID: <span id="certUID">—</span><br/>
+                        UID: <span id="certUID">—</span><br/>
+                        Verify at:
+                        <a id="certVerifyText"
+                           class="underline text-slate-600"
+                           href="#"
+                           target="_blank"
+                           rel="noopener">https://rahul-satav.github.io/SkillCert/verify.html</a>
                       </div>
                     </div>
                   </div>
@@ -202,7 +208,7 @@
     © <span id="year"></span> SkillCert • Recruiter-ready, professional certificates.
   </footer>
 
-  <!-- fail modal -->
+  <!-- Fail Modal -->
   <div id="failModal" class="modal fixed inset-0 bg-black/50 backdrop-blur-sm items-center justify-center p-4 z-50">
     <div class="w-full max-w-sm rounded-2xl bg-white shadow-xl p-5">
       <div class="flex items-start gap-3">
@@ -224,8 +230,19 @@
   const $$ = s => Array.from(document.querySelectorAll(s));
   const fancyScroll = id => window.scrollTo({top: document.querySelector(id).offsetTop - 70, behavior:'smooth'});
 
-  /* skills */
-  const skills = ["Java + Spring Boot","Angular","React","Node.js","Python","Django","Flask","FastAPI","C","C++","C#",".NET","Ruby on Rails","Go","Rust","Kotlin","Swift","Objective-C","Android","iOS","React Native","Flutter","HTML & CSS","JavaScript","TypeScript","SQL","NoSQL","MongoDB","PostgreSQL","MySQL","Firebase","GraphQL","REST APIs","Docker","Kubernetes","DevOps","CI/CD","Git & GitHub","Linux","Bash","Networking","AWS","Azure","GCP","Cloud Security","Cyber Security","Ethical Hacking","Pen-Testing","Data Analysis","Power BI","Tableau","Excel","Pandas","NumPy","Machine Learning","Deep Learning","NLP","Computer Vision","MLOps","Data Engineering","Spark","Hadoop","Salesforce","ServiceNow","QA Automation","Selenium","Playwright","Cypress","JMeter","UI/UX Design","Figma","Canva","Business Analytics","Blockchain","Web3","Solidity"];
+  /* Skills */
+  const skills = [
+    "Java + Spring Boot","Angular","React","Node.js","Python","Django","Flask","FastAPI",
+    "C","C++","C#",".NET","Ruby on Rails","Go","Rust","Kotlin","Swift","Objective-C",
+    "Android","iOS","React Native","Flutter","HTML & CSS","JavaScript","TypeScript",
+    "SQL","NoSQL","MongoDB","PostgreSQL","MySQL","Firebase","GraphQL","REST APIs",
+    "Docker","Kubernetes","DevOps","CI/CD","Git & GitHub","Linux","Bash","Networking",
+    "AWS","Azure","GCP","Cloud Security","Cyber Security","Ethical Hacking","Pen-Testing",
+    "Data Analysis","Power BI","Tableau","Excel","Pandas","NumPy","Machine Learning",
+    "Deep Learning","NLP","Computer Vision","MLOps","Data Engineering","Spark","Hadoop",
+    "Salesforce","ServiceNow","QA Automation","Selenium","Playwright","Cypress","JMeter",
+    "UI/UX Design","Figma","Canva","Business Analytics","Blockchain","Web3","Solidity"
+  ];
   const skillsGrid = $("#skillsGrid");
   skills.forEach(s=>{
     const b = document.createElement('button');
@@ -235,7 +252,7 @@
     skillsGrid.appendChild(b);
   });
 
-  /* question bank */
+  /* Question bank */
   const bank = {
     "Java + Spring Boot":[
       {q:"Which annotation starts a Spring Boot app?",a:["@SpringBootApplication","@EnableAutoConfiguration","@ComponentScan","@RestController"],c:0},
@@ -267,7 +284,7 @@
     ]
   };
 
-  /* start quiz */
+  /* Start quiz */
   $("#startQuizBtn").addEventListener('click', () => {
     const name  = $("#userName").value.trim();
     const email = $("#userEmail").value.trim();
@@ -303,6 +320,7 @@
     fancyScroll('#quiz');
   });
 
+  /* Submit quiz */
   const failModal = $("#failModal");
   const closeFail = $("#closeFail");
   const retakeBtn = $("#retakeBtn");
@@ -311,7 +329,7 @@
     let score = 0;
     for(let i=0;i<5;i++){
       const chosen = document.querySelector(`input[name="q${i}"]:checked`);
-      if(chosen && Number(chosen.value)===0) score++;
+      if(chosen && Number(chosen.value)===0) score++; // in our banks, index 0 is correct
     }
     const pct = Math.round((score/5)*100);
     const res = $("#quizResult");
@@ -343,9 +361,9 @@
     return {level:"Intermediate", medal:"3"};
   }
 
-  // NEW: generate UID + base verify URL
+  /* UID + Verify */
   function makeUID(n=8){
-    const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no O/0/1/I
+    const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // avoid confusing chars
     let out=""; for(let i=0;i<n;i++) out += chars[Math.floor(Math.random()*chars.length)];
     return out;
   }
@@ -367,20 +385,25 @@
     $("#medal").textContent     = medal;
     $("#certDate").textContent  = date;
 
-    // NEW: create UID + verify payload
+    // Create UID + payload
     const uid = makeUID(8);
     const payload = btoa(encodeURIComponent(JSON.stringify({uid,name,skill,score:pct,level,date})));
-    const verifyLink = `${baseURL()}verify.html?p=${payload}`;
+    const fullVerifyLink = `${baseURL()}verify.html?p=${payload}`;
+    const shortVerifyText = `${baseURL()}verify.html`;
 
     $("#certUID").textContent = uid;
-    $("#certVerifyText").textContent = verifyLink;
+    // show short text, keep full encoded link in href
+    const a = document.getElementById('certVerifyText');
+    a.textContent = shortVerifyText;
+    a.href = fullVerifyLink;
 
-    // expose link on window so you can copy if needed later
-    window.__lastVerifyLink = verifyLink;
+    // (optional) expose globally
+    window.__lastVerifyLink = fullVerifyLink;
 
     $("#certArea").classList.remove('hidden');
   }
 
+  /* Export PDF */
   async function autoDownloadPDF(){
     const node = document.getElementById('certCard');
     try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch(e){}
@@ -401,13 +424,14 @@
       pdf.addImage(dataUrl,'PNG',(pageW-w)/2,(pageH-h)/2,w,h);
       pdf.save('SkillCert_Certificate.pdf');
       window.scrollTo({top:0,behavior:'smooth'});
-      toast("🎉 Certificate downloaded! UID & verify link printed on it.");
+      toast("🎉 Certificate downloaded! UID & clean verify line added.");
     }catch(e){
       console.error(e);
       toast("PDF export failed. Refresh and try again.");
     }
   }
 
+  /* Toast */
   function toast(msg){
     const el=document.createElement('div');
     el.textContent=msg;
