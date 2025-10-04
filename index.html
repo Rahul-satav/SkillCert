@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <style>
-    :root { --indigo:#6366f1; --cyan:#06b6d4; --emerald:#10b981; --amber:#f59e0b; --gold1:#fde68a; --gold2:#fbbf24; --gold3:#f59e0b; }
+    :root { --indigo:#6366f1; --cyan:#06b6d4; --emerald:#10b981; --gold1:#fde68a; --gold2:#fbbf24; --gold3:#f59e0b; }
     body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#f6f9fc; }
     .hero {
       background:
@@ -29,19 +29,14 @@
     .card { transition: transform .15s ease, box-shadow .2s ease; }
     .card:hover { transform: translateY(-3px); box-shadow: 0 25px 40px rgba(2,6,23,.10); }
 
-    /* ===== CloudHire-inspired certificate ===== */
-    .cert-paper {
-      background:#ffffff;
-      border:6px solid #5b6ee5;              /* outer blue border */
-      border-radius:22px;
-      position:relative;
-    }
-    .cert-inner {
-      border:3px solid #c7d2fe;              /* inner pale border */
-      border-radius:16px;
-      height:100%;
-    }
-    /* corner ornaments (simple floral-like svg) */
+    /* ===== CloudHire-style certificate (fixed canvas) ===== */
+    /* A4 landscape ~150DPI => 1654 x 1169 px */
+    .cert-canvas { width:1654px; height:1169px; }
+    .cert-canvas * { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+
+    .cert-paper { background:#fff; border:6px solid #5b6ee5; border-radius:22px; position:relative; }
+    .cert-inner { border:3px solid #c7d2fe; border-radius:16px; height:100%; }
+
     .orn { position:absolute; width:120px; height:120px; opacity:.85; }
     .orn svg { width:100%; height:100%; }
     .orn.tl { left:-8px; top:-6px; transform:rotate(0deg); }
@@ -49,43 +44,20 @@
     .orn.bl { left:-8px; bottom:-6px; transform:scaleY(-1); }
     .orn.br { right:-8px; bottom:-6px; transform:scale(-1); }
 
-    /* headline like "CERTIFICATE" */
-    .cert-title {
-      letter-spacing: .08em;
-      color:#5a4633; /* warm brown like sample */
-    }
-    /* thin rule with dots at ends */
-    .fancy-hr {
-      position: relative;
-      height: 2px;
-      background: #3b82f6;
-      margin: 12px 0 18px 0;
-    }
-    .fancy-hr::before,
-    .fancy-hr::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      width: 8px; height: 8px;
-      background: #38bdf8; border:2px solid #0ea5e9; border-radius: 9999px;
-      transform: translateY(-50%);
-    }
-    .fancy-hr::before { left: -14px; }
-    .fancy-hr::after  { right: -14px; }
+    .cert-title { letter-spacing:.08em; color:#5a4633; }
+    .fancy-hr { position:relative; height:2px; background:#3b82f6; margin:12px 0 18px; }
+    .fancy-hr::before,.fancy-hr::after{ content:""; position:absolute; top:50%; width:8px;height:8px; background:#38bdf8; border:2px solid #0ea5e9; border-radius:9999px; transform:translateY(-50%);}
+    .fancy-hr::before{ left:-14px;} .fancy-hr::after{ right:-14px;}
 
-    /* medal badge */
-    .medal {
-      width:88px; height:88px; border-radius:9999px;
-      background: radial-gradient(circle at 35% 35%, var(--gold1), var(--gold2) 45%, var(--gold3));
+    .medal{
+      width:88px;height:88px;border-radius:9999px;
+      background:radial-gradient(circle at 35% 35%, var(--gold1), var(--gold2) 45%, var(--gold3));
       box-shadow: inset 0 6px 12px rgba(0,0,0,.08), 0 8px 18px rgba(0,0,0,.15);
-      display:flex; align-items:center; justify-content:center;
-      color:#fff; font-weight:800; font-size:28px;
-      border:4px solid #fef08a;
+      display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:28px;border:4px solid #fef08a;
     }
 
     /* modal */
-    .modal { display:none; }
-    .modal.show { display:flex; }
+    .modal{ display:none; } .modal.show{ display:flex; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -164,63 +136,67 @@
       </div>
     </section>
 
-    <!-- Hidden Certificate area (rendered then exported as PDF) -->
+    <!-- Certificate Preview (scaled for on-screen only; export keeps full size) -->
     <section id="certArea" class="hidden">
-      <div id="certCard" class="relative mx-auto aspect-[1.414/1] w-full max-w-[1100px] cert-paper overflow-hidden">
-        <!-- corner ornaments -->
-        <div class="orn tl">
-          <svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg>
-        </div>
-        <div class="orn tr">
-          <svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg>
-        </div>
-        <div class="orn bl">
-          <svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg>
-        </div>
-        <div class="orn br">
-          <svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg>
-        </div>
-
-        <div class="cert-inner rounded-[12px]">
-          <div class="h-full w-full p-8 md:p-12 flex flex-col">
-            <!-- Top Headings -->
-            <div class="text-center">
-              <div class="text-3xl md:text-5xl font-extrabold cert-title">CERTIFICATE</div>
-              <div class="mt-1 text-sm md:text-base tracking-[0.25em] text-slate-600 font-semibold">OF TAKING SKILL TEST</div>
-              <div class="mt-6 text-[12px] md:text-sm tracking-wide text-slate-600">This Certificate Is Presented To</div>
-              <div id="certName" class="mt-2 text-4xl md:text-6xl font-extrabold text-[#3157d4] capitalize">Candidate</div>
+      <div class="mx-auto w-full overflow-auto flex justify-center">
+        <div class="origin-top scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-[0.9]">
+          <div id="certCard" class="relative cert-paper cert-canvas overflow-hidden">
+            <!-- Ornaments -->
+            <div class="orn tl">
+              <svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg>
+            </div>
+            <div class="orn tr">
+              <svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg>
+            </div>
+            <div class="orn bl">
+              <svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg>
+            </div>
+            <div class="orn br">
+              <svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg>
             </div>
 
-            <!-- Rule -->
-            <div class="mx-10 md:mx-20 mt-6">
-              <div class="fancy-hr"></div>
-            </div>
+            <div class="cert-inner rounded-[12px]">
+              <div class="h-full w-full p-12 flex flex-col">
+                <!-- Headings -->
+                <div class="text-center">
+                  <div class="text-[58px] font-extrabold cert-title tracking-[.08em]">CERTIFICATE</div>
+                  <div class="mt-1 text-[16px] tracking-[0.25em] text-slate-600 font-semibold">OF TAKING SKILL TEST</div>
+                  <div class="mt-6 text-[14px] tracking-wide text-slate-600">This Certificate Is Presented To</div>
+                  <div id="certName" class="mt-2 text-[72px] font-extrabold text-[#3157d4] capitalize">Candidate</div>
+                </div>
 
-            <!-- Body text -->
-            <div class="mt-4 md:mt-6 text-center text-[13px] md:text-base text-slate-700 leading-relaxed px-6 md:px-20">
-              Has successfully completed the <b id="certSkill">Skill</b> skill test,  
-              demonstrating exceptional professional expertise with a score 
-              <b id="certScore">80%</b>, earning a <b id="certLevel">Proficient</b> level certification.
-            </div>
+                <!-- Rule -->
+                <div class="mx-[120px] mt-6">
+                  <div class="fancy-hr"></div>
+                </div>
 
-            <!-- Medal + Brand -->
-            <div class="mt-auto grid grid-cols-2 gap-6 px-8 md:px-12 pb-6 md:pb-8">
-              <div class="flex items-center gap-4">
-                <div id="medal" class="medal">2</div>
-                <div class="text-xs text-slate-500">
-                  Date: <span id="certDate"></span><br/>
-                  Issued by <b>Rahul Shahaji Satav</b>
+                <!-- Body text -->
+                <div class="mt-6 text-center text-[18px] text-slate-700 leading-relaxed px-[120px]">
+                  Has successfully completed the <b id="certSkill">Skill</b> skill test,
+                  demonstrating exceptional professional expertise with a score
+                  <b id="certScore">80%</b>, earning a <b id="certLevel">Proficient</b> level certification.
+                </div>
+
+                <!-- Medal + Brand -->
+                <div class="mt-auto grid grid-cols-2 gap-6 px-[70px] pb-[28px]">
+                  <div class="flex items-center gap-4">
+                    <div id="medal" class="medal">2</div>
+                    <div class="text-[12px] text-slate-500">
+                      Date: <span id="certDate"></span><br/>
+                      Issued by <b>Rahul Shahaji Satav</b>
+                    </div>
+                  </div>
+                  <div class="flex items-end justify-end">
+                    <div class="flex items-center gap-2">
+                      <img src="assets/logo.svg" class="h-7 w-7" alt="logo">
+                      <div class="text-[28px] font-bold" style="background:linear-gradient(90deg,#2563eb,#06b6d4); -webkit-background-clip:text; color:transparent">SkillCert</div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="flex items-end justify-end">
-                <div class="flex items-center gap-2">
-                  <img src="assets/logo.svg" class="h-7 w-7" alt="logo">
-                  <div class="text-2xl font-bold" style="background:linear-gradient(90deg,#2563eb,#06b6d4); -webkit-background-clip:text; color:transparent">SkillCert</div>
-                </div>
-              </div>
-            </div>
+            </div> <!-- /inner -->
           </div>
-        </div> <!-- /inner -->
+        </div>
       </div>
     </section>
 
@@ -230,7 +206,7 @@
     © <span id="year"></span> SkillCert • Recruiter-ready, professional certificates.
   </footer>
 
-  <!-- Modern Fail Modal -->
+  <!-- Fail Modal -->
   <div id="failModal" class="modal fixed inset-0 bg-black/50 backdrop-blur-sm items-center justify-center p-4 z-50">
     <div class="w-full max-w-sm rounded-2xl bg-white shadow-xl p-5">
       <div class="flex items-start gap-3">
@@ -248,12 +224,11 @@
   </div>
 
 <script>
-  /* ---------- helpers ---------- */
   const $  = s => document.querySelector(s);
   const $$ = s => Array.from(document.querySelectorAll(s));
   const fancyScroll = id => window.scrollTo({top: document.querySelector(id).offsetTop - 70, behavior:'smooth'});
 
-  /* ---------- skills ---------- */
+  /* Skills */
   const skills = [
     "Java + Spring Boot","Angular","React","Node.js","Python","Django","Flask","FastAPI",
     "C","C++","C#",".NET","Ruby on Rails","Go","Rust","Kotlin","Swift","Objective-C",
@@ -275,7 +250,7 @@
     skillsGrid.appendChild(b);
   });
 
-  /* ---------- question bank (some real, generic fallback otherwise) ---------- */
+  /* Question bank */
   const bank = {
     "Java + Spring Boot":[
       {q:"Which annotation starts a Spring Boot app?",a:["@SpringBootApplication","@EnableAutoConfiguration","@ComponentScan","@RestController"],c:0},
@@ -307,7 +282,7 @@
     ]
   };
 
-  /* ---------- start quiz ---------- */
+  /* Start quiz */
   $("#startQuizBtn").addEventListener('click', () => {
     const name  = $("#userName").value.trim();
     const email = $("#userEmail").value.trim();
@@ -343,7 +318,7 @@
     fancyScroll('#quiz');
   });
 
-  /* ---------- submit quiz -> modal on fail / auto PDF on pass ---------- */
+  /* Submit quiz */
   const failModal = $("#failModal");
   const closeFail = $("#closeFail");
   const retakeBtn = $("#retakeBtn");
@@ -352,7 +327,7 @@
     let score = 0;
     for(let i=0;i<5;i++){
       const chosen = document.querySelector(`input[name="q${i}"]:checked`);
-      if(chosen && Number(chosen.value)===0) score++; // our banks use index 0 as correct
+      if(chosen && Number(chosen.value)===0) score++; // index 0 is correct in our banks
     }
     const pct = Math.round((score/5)*100);
     const res = $("#quizResult");
@@ -361,7 +336,7 @@
 
     if(pct>=80){
       buildCertificate(pct);
-      await new Promise(r=>setTimeout(r,200)); // small paint delay
+      await new Promise(r=>setTimeout(r,200));
       autoDownloadPDF();
     } else {
       failModal.classList.add('show','flex');
@@ -378,14 +353,14 @@
     fancyScroll('#quiz');
   });
 
-  /* ---------- compute level + medal ---------- */
+  /* Level + medal */
   function computeLevel(pct){
     if(pct>=93) return {level:"Advanced", medal:"1"};
     if(pct>=85) return {level:"Proficient", medal:"2"};
     return {level:"Intermediate", medal:"3"};
   }
 
-  /* ---------- build certificate ---------- */
+  /* Build certificate */
   function buildCertificate(pct){
     $("#certName").textContent  = $("#userName").value.trim();
     $("#certSkill").textContent = $("#skillName").value.trim();
@@ -397,35 +372,47 @@
     $("#certArea").classList.remove('hidden');
   }
 
-  /* ---------- export PDF ---------- */
+  /* Export PDF (fixed canvas, identical on phone & desktop) */
   async function autoDownloadPDF(){
     const node = document.getElementById('certCard');
-    // ensure images loaded
+
+    // wait for fonts & images
+    try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch(e){}
     await Promise.all([...node.querySelectorAll('img')].map(img=>{
-      if(img.complete && img.naturalWidth>0) return Promise.resolve();
+      if(img.complete && img.naturalWidth>0) return;
       return new Promise(res=>{ img.onload=res; img.onerror=res; });
     }));
+
+    const W = 1654, H = 1169; // fixed canvas size
+
     try{
-      const dataUrl = await htmlToImage.toPng(node,{pixelRatio:2,cacheBust:true,useCORS:true});
+      const dataUrl = await htmlToImage.toPng(node, {
+        pixelRatio: 2,
+        cacheBust: true,
+        width: W,
+        height: H,
+        style: { transform:'scale(1)', width: W+'px', height: H+'px' }
+      });
+
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF({orientation:'landscape', unit:'pt', format:'a4'});
-      const W = pdf.internal.pageSize.getWidth(), H = pdf.internal.pageSize.getHeight();
-      const img = new Image(); img.src = dataUrl;
-      img.onload = () => {
-        const r = Math.min(W/img.width, H/img.height);
-        const w = img.width*r, h = img.height*r;
-        pdf.addImage(dataUrl,'PNG',(W-w)/2,(H-h)/2,w,h);
-        pdf.save('SkillCert_Certificate.pdf');
-        window.scrollTo({top:0,behavior:'smooth'});
-        toast("🎉 Certificate downloaded! Add it to your resume and LinkedIn.");
-      };
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+
+      const r = Math.min(pageW/W, pageH/H);
+      const w = W*r, h = H*r;
+      pdf.addImage(dataUrl,'PNG',(pageW-w)/2,(pageH-h)/2,w,h);
+      pdf.save('SkillCert_Certificate.pdf');
+
+      window.scrollTo({top:0,behavior:'smooth'});
+      toast("🎉 Certificate downloaded! Looks identical on mobile & desktop.");
     }catch(e){
       console.error(e);
       toast("PDF export failed. Refresh and try again.");
     }
   }
 
-  /* ---------- tiny toast ---------- */
+  /* Toast */
   function toast(msg){
     const el=document.createElement('div');
     el.textContent=msg;
