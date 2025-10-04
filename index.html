@@ -1,474 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>SkillCert — Instant Certificates</title>
-  <meta name="description" content="Get a professional, recruiter-ready certificate by passing a quick 5-question skill test. Perfect for resume and jobs."/>
-  <link rel="icon" href="assets/logo.svg"/>
-
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <!-- Export libs -->
-  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SkillCert — Skill Validation</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
-    :root{
-      --indigo:#3b82f6; /* blue accents for headings */
-      --blueDeep:#1e40af;
-      --cyan:#06b6d4;
-      --emerald:#10b981;
-      --gold1:#f5d381; /* warm golds */
-      --gold2:#f1c451;
-      --gold3:#d9a92d;
-      --ink:#2b2b2b;
+    body {
+      background: #f5f6fa;
+      font-family: 'Inter', sans-serif;
     }
-    body{ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#f6f9fc; color:#0f172a; }
-    .hero{
-      background:
-        radial-gradient(900px 380px at 10% -20%, rgba(59,130,246,.20), transparent 60%),
-        radial-gradient(1100px 460px at 100% -10%, rgba(6,182,212,.18), transparent 60%),
-        linear-gradient(135deg, #3b82f6, #06b6d4 60%, #14b8a6);
+    .cert-container {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      background: white;
+      border: 6px solid #d4af37; /* gold border */
+      border-radius: 20px;
+      padding: 40px;
+      position: relative;
+      background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><path d="M0,40 Q80,0 160,40" stroke="%23d4af37" stroke-width="4" fill="none"/></svg>');
+      background-repeat: no-repeat;
+      background-position: top center;
     }
-    .card{ transition:transform .15s ease, box-shadow .2s ease; }
-    .card:hover{ transform:translateY(-3px); box-shadow:0 24px 36px rgba(2,6,23,.10); }
-
-    /* ===== Fixed A4 landscape canvas (identical on phone & desktop) ===== */
-    .cert-canvas{ width:1654px; height:1169px; }
-    .cert-canvas *{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
-
-    /* Gold + Blue frame (outer) */
-    .cert-paper{
-      position:relative;
-      border-radius:22px;
-      /* gold border using background + padding trick */
-      background:
-        linear-gradient(white, white) padding-box,
-        linear-gradient(135deg, #e9d8a6, #f1c451 30%, #d9a92d 70%, #b98a1f) border-box;
-      border:6px solid transparent;
-      box-shadow:0 24px 48px rgba(0,0,0,.08);
+    .cert-title {
+      font-size: 52px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: #4b3621;
     }
-    /* inner thin border in faint blue to keep your brand mix */
-    .cert-inner{
-      height:100%;
-      border-radius:16px;
-      background:#ffffff;
-      border:3px solid rgba(59,130,246,.18);
+    .fancy-hr {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #3b82f6, transparent);
     }
-
-    /* Gold corner flourishes */
-    .orn{ position:absolute; width:120px; height:120px; opacity:.95; }
-    .orn svg{ width:100%; height:100%; }
-    .orn.tl{ left:-10px; top:-8px; transform:rotate(0deg); }
-    .orn.tr{ right:-10px; top:-8px; transform:scaleX(-1); }
-    .orn.bl{ left:-10px; bottom:-8px; transform:scaleY(-1); }
-    .orn.br{ right:-10px; bottom:-8px; transform:scale(-1); }
-
-    .cert-title{ letter-spacing:.10em; color:#5a4633; } /* classy brown ink */
-    .fancy-hr{
-      position:relative; height:2px; background:#3b82f6; margin:14px 0 18px; opacity:.9;
+    .medal {
+      background: radial-gradient(circle at 30% 30%, #ffd966, #d4af37);
+      height: 52px;
+      width: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 20px;
+      color: #4b3621;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-    .fancy-hr::before,.fancy-hr::after{
-      content:""; position:absolute; top:50%; width:8px; height:8px; border-radius:9999px;
-      background:#60a5fa; border:2px solid #2563eb; transform:translateY(-50%);
+    @media (max-width: 768px) {
+      .cert-container {
+        padding: 20px;
+      }
+      #certName {
+        font-size: 48px;
+      }
     }
-    .fancy-hr::before{ left:-14px; } .fancy-hr::after{ right:-14px; }
-
-    .medal{
-      width:92px; height:92px; border-radius:9999px;
-      background:radial-gradient(circle at 35% 35%, #fff6cc, var(--gold1) 40%, var(--gold2) 70%, var(--gold3));
-      border:4px solid #fff6cc;
-      box-shadow: inset 0 8px 14px rgba(0,0,0,.10), 0 10px 22px rgba(0,0,0,.16);
-      display:flex; align-items:center; justify-content:center;
-      color:#704c00; font-weight:800; font-size:30px;
-    }
-
-    /* modal */
-    .modal{ display:none; } .modal.show{ display:flex; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-  <!-- Header -->
-  <header class="bg-white/80 backdrop-blur border-b">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <img src="assets/logo.svg" class="h-6 w-6" alt="logo">
-        <span class="font-semibold">SkillCert — Instant Certificates</span>
-      </div>
-      <nav class="text-sm text-slate-600 flex gap-4">
-        <a href="#skills" class="hover:text-indigo-600">Skills</a>
-        <a href="#form" class="hover:text-indigo-600">Details</a>
-        <a href="#quiz" class="hover:text-indigo-600">Quiz</a>
-      </nav>
-    </div>
+  <!-- HEADER -->
+  <header class="text-center mb-10">
+    <h1 class="text-4xl font-extrabold text-gray-800 mb-2">SkillCert — Online Skill Test</h1>
+    <p class="text-gray-500">Take a quick skill test and get your professional certificate instantly</p>
   </header>
 
-  <!-- Hero -->
-  <section class="hero text-white border-b">
-    <div class="max-w-6xl mx-auto px-4 py-12">
-      <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">🏆 Premium, Recruiter-Ready Certificates</h1>
-      <p class="mt-3 opacity-95 text-sm md:text-base">Pass a 5-question test • Auto-download a professional certificate • Perfect for resumes & jobs</p>
-      <div class="mt-4 flex flex-wrap gap-2 text-xs">
-        <span class="px-2 py-1 rounded-full bg-white/15 border border-white/30">Gold accent design</span>
-        <span class="px-2 py-1 rounded-full bg-white/15 border border-white/30">One-tap verification</span>
-        <span class="px-2 py-1 rounded-full bg-white/15 border border-white/30">Fast & simple</span>
+  <!-- SKILL SELECT -->
+  <section class="w-full max-w-lg bg-white rounded-xl shadow p-6 mb-8">
+    <h2 class="text-xl font-semibold mb-4">Select a Skill</h2>
+    <select id="skillSelect" class="w-full border rounded px-3 py-2">
+      <option disabled selected>Choose a skill</option>
+      <option>Java</option>
+      <option>Angular</option>
+      <option>React</option>
+      <option>Node.js</option>
+      <option>SQL</option>
+      <option>Python</option>
+      <option>FastAPI</option>
+      <option>Data Analysis</option>
+      <option>AWS</option>
+      <option>Cyber Security</option>
+    </select>
+    <button id="startQuiz" class="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Start Quiz</button>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quizSection" class="w-full max-w-xl bg-white rounded-xl shadow p-6 hidden">
+    <h2 class="text-xl font-semibold mb-4">Skill Quiz</h2>
+    <form id="quizForm" class="space-y-4">
+      <!-- Questions will be inserted here -->
+    </form>
+    <button id="submitQuiz" class="mt-4 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Submit Quiz</button>
+  </section>
+
+  <!-- FAIL MESSAGE -->
+  <div id="failMessage" class="hidden mt-6 text-center">
+    <p class="text-red-600 font-semibold mb-3">❌ You scored below 80%. Please try again!</p>
+    <button id="retakeBtn" class="bg-blue-600 text-white px-4 py-2 rounded">Retake Quiz</button>
+  </div>
+
+  <!-- CERTIFICATE -->
+  <section id="certificateSection" class="hidden w-full flex justify-center mt-10">
+    <div id="certCard" class="cert-container">
+
+      <div class="flex flex-col h-full">
+        <!-- Top -->
+        <div class="text-center">
+          <div class="cert-title">CERTIFICATE</div>
+          <div class="mt-1 text-[13px] tracking-[0.25em] text-slate-600 font-semibold">
+            OF COMPLETING A SKILL VALIDATION TEST
+          </div>
+          <div class="mt-5 text-[12px] tracking-wide text-slate-500">
+            This Official Credential Is Conferred Upon
+          </div>
+          <div id="certName" class="mt-2 text-[64px] font-extrabold text-blue-700 capitalize">Name</div>
+        </div>
+
+        <div class="mx-[100px] mt-6"><div class="fancy-hr"></div></div>
+
+        <div class="mt-5 text-center text-[15px] text-slate-700 leading-relaxed px-[80px] max-w-[900px] mx-auto">
+          Has successfully completed, mastered, and rigorously validated their advanced expertise in the
+          <b id="certSkill">Skill</b> skill test, achieving an exceptional and commendable final score of
+          <b id="certScore">100%</b>, thereby securing the highly-coveted <b id="certLevel">Advanced</b> level certification.
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 flex flex-col items-center justify-center gap-2">
+          <div id="medal" class="medal">1</div>
+          <div class="text-[12px] text-slate-500 leading-tight text-center">
+            Issued by <b>Rahul Shahaji Satav</b> • Date: <span id="certDate"></span>
+          </div>
+          <div class="text-[12px] text-slate-500 leading-tight text-center">
+            UID: <span id="certUID">—</span>
+          </div>
+          <div class="mt-1 flex items-center gap-2">
+            <img src="assets/logo.svg" class="h-7 w-7" alt="logo">
+            <div class="text-[26px] font-extrabold" style="background:linear-gradient(90deg,#1e40af,#3b82f6);-webkit-background-clip:text;color:transparent">
+              SkillCert
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
-
-    <!-- Skills -->
-    <section id="skills" class="rounded-2xl border bg-white p-4">
-      <div class="flex items-center justify-between">
-        <h2 class="text-base font-semibold">Choose Your Skill</h2>
-        <p class="text-xs text-slate-500">50+ options • or type your own below</p>
-      </div>
-      <div id="skillsGrid" class="mt-3 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2"></div>
-    </section>
-
-    <!-- Details -->
-    <section id="form" class="rounded-2xl border bg-white p-4">
-      <h2 class="text-base font-semibold mb-3">Your Details</h2>
-      <div class="grid sm:grid-cols-3 gap-3">
-        <label class="block text-sm">Full Name
-          <input id="userName" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="e.g., Rahul Satav">
-        </label>
-        <label class="block text-sm">Email (demo)
-          <input id="userEmail" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="rahul@gmail.com">
-        </label>
-        <label class="block text-sm">Selected Skill (editable)
-          <input id="skillName" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="e.g., Java">
-        </label>
-      </div>
-      <div class="mt-3">
-        <button id="startQuizBtn" class="px-4 py-2 rounded-xl text-white bg-gradient-to-r from-[var(--indigo)] via-[var(--cyan)] to-[var(--emerald)] shadow">
-          Start 5-Question Quiz
-        </button>
-        <span class="text-xs text-slate-500 ml-2">Email must be <b>rahul@gmail.com</b> (demo).</span>
-      </div>
-    </section>
-
-    <!-- Quiz -->
-    <section id="quiz" class="hidden rounded-2xl border bg-white p-4">
-      <div class="flex items-center justify-between">
-        <h2 class="text-base font-semibold">Quick Test • <span id="quizSkill"></span></h2>
-        <p class="text-xs text-slate-500">Score ≥ <b>80%</b> to earn a certificate</p>
-      </div>
-      <div id="quizContainer" class="mt-3 space-y-4"></div>
-      <div class="mt-4 flex items-center gap-3">
-        <button id="submitQuizBtn" class="px-4 py-2 rounded-xl bg-slate-900 text-white">Submit Quiz</button>
-        <p id="quizResult" class="text-sm font-medium"></p>
-      </div>
-    </section>
-
-    <!-- Certificate (scaled preview only) -->
-    <section id="certArea" class="hidden">
-      <div class="mx-auto w-full overflow-auto flex justify-center">
-        <div class="origin-top scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-[0.9]">
-          <div id="certCard" class="relative cert-paper cert-canvas overflow-hidden">
-            <!-- Gold corner ornaments -->
-            <div class="orn tl"><svg viewBox="0 0 120 120" fill="#f1c451"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
-            <div class="orn tr"><svg viewBox="0 0 120 120" fill="#f1c451"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
-            <div class="orn bl"><svg viewBox="0 0 120 120" fill="#f1c451"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
-            <div class="orn br"><svg viewBox="0 0 120 120" fill="#f1c451"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
-
-            <!-- Balanced layout: top content + centered footer -->
-            <div class="cert-inner rounded-[16px] flex flex-col justify-between h-full p-12">
-              <!-- Top block -->
-              <div>
-                <div class="text-center">
-                  <div class="text-[58px] font-extrabold cert-title tracking-[.10em]">CERTIFICATE</div>
-                  <div class="mt-1 text-[14px] tracking-[0.32em] text-slate-600 font-semibold">OF COMPLETING A SKILL VALIDATION TEST</div>
-                  <div class="mt-6 text-[13px] tracking-wide text-slate-500">This Official Credential Is Conferred Upon</div>
-                  <div id="certName" class="mt-2 text-[72px] font-extrabold text-[#3157d4] capitalize">Candidate</div>
-                </div>
-
-                <div class="mx-[140px] mt-6"><div class="fancy-hr"></div></div>
-
-                <div class="mt-5 text-center text-[17px] text-slate-700 leading-relaxed px-[160px]">
-                  Has successfully completed, mastered, and rigorously validated their advanced expertise in the
-                  <b id="certSkill">Skill</b> skill test, achieving an exceptional and commendable final score of
-                  <b id="certScore">100%</b>, thereby securing the highly-coveted <b id="certLevel">Advanced</b> level certification.
-                </div>
-              </div>
-
-              <!-- Centered footer cluster -->
-              <div class="mt-10 pb-[24px]">
-                <div class="flex flex-col items-center justify-center gap-2">
-                  <div id="medal" class="medal">1</div>
-
-                  <div class="mt-2 text-[12px] text-slate-500 leading-tight text-center">
-                    Issued by <b>Rahul Shahaji Satav</b> • Date: <span id="certDate"></span>
-                  </div>
-
-                  <div class="text-[12px] text-slate-500 leading-tight text-center">
-                    UID: <span id="certUID">—</span><br/>
-                    Verify at:
-                    <a id="certVerifyText"
-                       class="underline text-slate-600"
-                       href="#"
-                       target="_blank"
-                       rel="noopener">https://rahul-satav.github.io/SkillCert/verify.html</a>
-                  </div>
-
-                  <!-- Brand -->
-                  <div class="mt-1 flex items-center gap-2">
-                    <img src="assets/logo.svg" class="h-7 w-7" alt="logo">
-                    <div class="text-[26px] font-extrabold"
-                         style="background:linear-gradient(90deg,#1e40af,#3b82f6); -webkit-background-clip:text; color:transparent">
-                      SkillCert
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div><!-- /inner -->
-          </div>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <footer class="py-8 text-center text-xs text-slate-500">
-    © <span id="year"></span> SkillCert • Recruiter-ready, professional certificates.
-  </footer>
-
-  <!-- Fail Modal -->
-  <div id="failModal" class="modal fixed inset-0 bg-black/50 backdrop-blur-sm items-center justify-center p-4 z-50">
-    <div class="w-full max-w-sm rounded-2xl bg-white shadow-xl p-5">
-      <div class="flex items-start gap-3">
-        <div class="mt-1 shrink-0 w-10 h-10 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-lg">✖</div>
-        <div>
-          <h3 class="text-base font-semibold">You didn’t pass this time</h3>
-          <p class="text-sm text-slate-600 mt-1">You need at least <b>80%</b>. Review and try again — you’ve got this!</p>
-        </div>
-      </div>
-      <div class="mt-4 flex gap-2 justify-end">
-        <button id="closeFail" class="px-3 py-1.5 rounded-lg border bg-white">Close</button>
-        <button id="retakeBtn" class="px-3 py-1.5 rounded-lg text-white"
-                style="background: linear-gradient(90deg, var(--indigo), var(--cyan));">🔄 Retake quiz</button>
-      </div>
-    </div>
-  </div>
-
 <script>
-  const $  = s => document.querySelector(s);
-  const $$ = s => Array.from(document.querySelectorAll(s));
-  const fancyScroll = id => window.scrollTo({top: document.querySelector(id).offsetTop - 70, behavior:'smooth'});
-
-  /* Skills */
-  const skills = [
-    "Java + Spring Boot","Angular","React","Node.js","Python","Django","Flask","FastAPI",
-    "C","C++","C#",".NET","Ruby on Rails","Go","Rust","Kotlin","Swift","Objective-C",
-    "Android","iOS","React Native","Flutter","HTML & CSS","JavaScript","TypeScript",
-    "SQL","NoSQL","MongoDB","PostgreSQL","MySQL","Firebase","GraphQL","REST APIs",
-    "Docker","Kubernetes","DevOps","CI/CD","Git & GitHub","Linux","Bash","Networking",
-    "AWS","Azure","GCP","Cloud Security","Cyber Security","Ethical Hacking","Pen-Testing",
-    "Data Analysis","Power BI","Tableau","Excel","Pandas","NumPy","Machine Learning",
-    "Deep Learning","NLP","Computer Vision","MLOps","Data Engineering","Spark","Hadoop",
-    "Salesforce","ServiceNow","QA Automation","Selenium","Playwright","Cypress","JMeter",
-    "UI/UX Design","Figma","Canva","Business Analytics","Blockchain","Web3","Solidity"
-  ];
-  const skillsGrid = $("#skillsGrid");
-  skills.forEach(s=>{
-    const b = document.createElement('button');
-    b.textContent = s;
-    b.className = "card px-3 py-2 rounded-lg border bg-white hover:bg-indigo-50 text-sm";
-    b.onclick = () => { $("#skillName").value = s; fancyScroll('#form'); };
-    skillsGrid.appendChild(b);
-  });
-
-  /* Question bank (short & crisp) */
-  const bank = {
-    "Java + Spring Boot":[
-      {q:"Which annotation starts a Spring Boot app?",a:["@SpringBootApplication","@EnableAutoConfiguration","@ComponentScan","@RestController"],c:0},
-      {q:"Default embedded server?",a:["Tomcat","Jetty","Undertow","Netty"],c:0},
-      {q:"Config file?",a:["application.properties","pom.xml","settings.gradle","bootstrap.yml"],c:0},
-      {q:"JPA stands for…",a:["Java Persistence API","Java Package API","Java Processing API","JSON Persistence API"],c:0},
-      {q:"Maps HTTP GET:",a:["@GetMapping","@PostMapping","@RequestBody","@PathVariable"],c:0}
-    ],
-    "React":[
-      {q:"React state updates are…",a:["Asynchronous","Synchronous","Blocking","None"],c:0},
-      {q:"JSX compiles to…",a:["React.createElement","HTML strings","DOM nodes","CSS"],c:0},
-      {q:"Hook for side effects?",a:["useEffect","useState","useMemo","useRef"],c:0},
-      {q:"Keys in lists should be…",a:["Stable & unique","Random each render","Index always","Same for all"],c:0},
-      {q:"To lift state up you…",a:["Move state to common parent","Use context only","Global variable","Refs only"],c:0}
-    ],
-    "AWS":[
-      {q:"S3 is used for…",a:["Object storage","Compute","Queues","DB"],c:0},
-      {q:"EC2 provides…",a:["Virtual servers","Object storage","Data warehouse","Email"],c:0},
-      {q:"Lambda is…",a:["Serverless compute","File storage","VPC","CDN"],c:0},
-      {q:"RDS manages…",a:["Relational DBs","Queues","Monitoring","DNS"],c:0},
-      {q:"CloudFront is a…",a:["CDN","SQL engine","IDE","OS"],c:0}
-    ],
-    "SQL":[
-      {q:"Which keyword returns rows?",a:["SELECT","PUT","FIND","GET"],c:0},
-      {q:"JOIN combines rows from…",a:["Multiple tables","One column","File system","Logs"],c:0},
-      {q:"To filter rows use…",a:["WHERE","ORDER","GROUP","HAVING only"],c:0},
-      {q:"Aggregate function?",a:["COUNT","PRINT","SUMIF","MAP"],c:0},
-      {q:"Primary key is…",a:["Unique identifier","A foreign key","A view","A file"],c:0}
+  const quizData = {
+    "Java": [
+      { q: "What is Java mainly used for?", options: ["AI", "Web", "Games", "Design"], answer: 1 },
+      { q: "Java supports ___ programming", options: ["Functional", "Object-Oriented", "Procedural", "None"], answer: 1 },
+      { q: "Which keyword is used to inherit a class?", options: ["this", "super", "extends", "implements"], answer: 2 },
+      { q: "Which of these is not a Java feature?", options: ["Platform Independent", "Secure", "Dynamic", "Pointer Arithmetic"], answer: 3 },
+      { q: "What is JVM?", options: ["Java Virtual Machine", "Just Virtual Mode", "Java Vendor Management", "None"], answer: 0 }
     ]
+    // Add more for other skills
   };
 
-  /* Start quiz */
-  $("#startQuizBtn").addEventListener('click', () => {
-    const name  = $("#userName").value.trim();
-    const email = $("#userEmail").value.trim();
-    const skill = $("#skillName").value.trim();
-    if(!name || !email || !skill){ toast("Please enter your name, email and skill."); return; }
-    if(email.toLowerCase() !== "rahul@gmail.com"){ toast("For demo, email must be rahul@gmail.com"); return; }
+  const startBtn = document.getElementById('startQuiz');
+  const skillSelect = document.getElementById('skillSelect');
+  const quizSection = document.getElementById('quizSection');
+  const quizForm = document.getElementById('quizForm');
+  const submitBtn = document.getElementById('submitQuiz');
+  const certificateSection = document.getElementById('certificateSection');
+  const failMessage = document.getElementById('failMessage');
+  const retakeBtn = document.getElementById('retakeBtn');
 
-    const set = bank[skill] || [
-      {q:`${skill}: Which statement is true?`,a:["It improves with practice","It cannot be measured","Only theory matters","None"],c:0},
-      {q:"A strong portfolio shows…",a:["Applied skill","Only certs","Only grades","Only theory"],c:0},
-      {q:"Version control used is…",a:["Git","SVN only","Zip files","Email"],c:0},
-      {q:"Writing tests helps…",a:["Quality & confidence","Slows everything","Costs only","Nothing"],c:0},
-      {q:"Docs should be…",a:["Clear & updated","Skipped","Private only","Screenshots"],c:0}
-    ];
+  startBtn.addEventListener('click', () => {
+    const skill = skillSelect.value;
+    if (!skill || skill === 'Choose a skill') return alert('Please select a skill');
+    generateQuiz(skill);
+    quizSection.classList.remove('hidden');
+    startBtn.disabled = true;
+  });
 
-    $("#quizContainer").innerHTML = "";
-    set.slice(0,5).forEach((item,idx)=>{
+  function generateQuiz(skill) {
+    quizForm.innerHTML = '';
+    quizData[skill].forEach((item, index) => {
       const div = document.createElement('div');
-      div.className = "rounded-xl border p-3 bg-white/80";
       div.innerHTML = `
-        <p class="font-medium">${idx+1}. ${item.q}</p>
-        <div class="mt-2 grid sm:grid-cols-2 gap-2">
-          ${item.a.map((opt,i)=>`
-            <label class="inline-flex items-center gap-2 text-sm">
-              <input type="radio" name="q${idx}" value="${i}">
-              <span>${opt}</span>
-            </label>`).join('')}
-        </div>`;
-      $("#quizContainer").appendChild(div);
+        <p class="font-semibold mb-2">${index+1}. ${item.q}</p>
+        ${item.options.map((opt, i) =>
+          `<label class="block"><input type="radio" name="q${index}" value="${i}" class="mr-2"> ${opt}</label>`
+        ).join('')}
+      `;
+      quizForm.appendChild(div);
     });
-    $("#quizSkill").textContent = skill;
-    $("#quiz").classList.remove('hidden');
-    fancyScroll('#quiz');
-  });
+  }
 
-  /* Submit quiz */
-  const failModal = $("#failModal");
-  const closeFail = $("#closeFail");
-  const retakeBtn = $("#retakeBtn");
-
-  $("#submitQuizBtn").addEventListener('click', async () => {
+  submitBtn.addEventListener('click', () => {
+    const skill = skillSelect.value;
+    const answers = quizData[skill];
     let score = 0;
-    for(let i=0;i<5;i++){
-      const chosen = document.querySelector(`input[name="q${i}"]:checked`);
-      if(chosen && Number(chosen.value)===0) score++; // in our banks, index 0 is correct
-    }
-    const pct = Math.round((score/5)*100);
-    const res = $("#quizResult");
-    res.textContent = `Score: ${score}/5 (${pct}%)`;
-    res.className = "text-sm font-medium " + (pct>=80?"text-emerald-600":"text-rose-600");
+    answers.forEach((item, idx) => {
+      const selected = quizForm[`q${idx}`].value;
+      if (selected == item.answer) score++;
+    });
+    const percent = (score / answers.length) * 100;
 
-    if(pct>=80){
-      buildCertificate(pct);
-      await new Promise(r=>setTimeout(r,200));
-      autoDownloadPDF();
+    if (percent >= 80) {
+      generateCertificate(skill, percent);
     } else {
-      failModal.classList.add('show','flex');
+      failMessage.classList.remove('hidden');
+      quizSection.classList.add('hidden');
     }
   });
 
-  closeFail.addEventListener('click', ()=> failModal.classList.remove('show','flex'));
-  retakeBtn.addEventListener('click', ()=> {
-    for (let i=0;i<5;i++){
-      document.querySelectorAll(`input[name="q${i}"]`).forEach(inp=>inp.checked=false);
-    }
-    $("#quizResult").textContent="";
-    failModal.classList.remove('show','flex');
-    fancyScroll('#quiz');
+  retakeBtn.addEventListener('click', () => {
+    location.reload();
   });
 
-  function computeLevel(pct){
-    if(pct>=93) return {level:"Advanced", medal:"1"};
-    if(pct>=85) return {level:"Proficient", medal:"2"};
-    return {level:"Intermediate", medal:"3"};
+  function generateCertificate(skill, score) {
+    document.getElementById('certName').innerText = "Rahul Satav";
+    document.getElementById('certSkill').innerText = skill;
+    document.getElementById('certScore').innerText = `${score}%`;
+    document.getElementById('certLevel').innerText = score >= 90 ? 'Advanced' : 'Intermediate';
+    document.getElementById('certDate').innerText = new Date().toLocaleDateString();
+    document.getElementById('certUID').innerText = Math.random().toString(36).substring(2,10).toUpperCase();
+
+    certificateSection.classList.remove('hidden');
+    quizSection.classList.add('hidden');
+    failMessage.classList.add('hidden');
+
+    setTimeout(() => downloadPDF(), 1000);
   }
 
-  /* UID + Verify */
-  function makeUID(n=8){
-    const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // avoid confusing chars
-    let out=""; for(let i=0;i<n;i++) out += chars[Math.floor(Math.random()*chars.length)];
-    return out;
+  function downloadPDF() {
+    const element = document.getElementById('certCard');
+    const opt = {
+      margin: 0,
+      filename: 'SkillCert_Certificate.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().from(element).set(opt).save();
   }
-  function baseURL(){
-    // e.g., https://rahul-satav.github.io/SkillCert/
-    return (location.origin + location.pathname).replace(/\/[^\/]*$/, '/');
-  }
-
-  function buildCertificate(pct){
-    const name  = $("#userName").value.trim();
-    const skill = $("#skillName").value.trim();
-    const {level, medal} = computeLevel(pct);
-    const date  = new Date().toLocaleDateString();
-
-    $("#certName").textContent  = name;
-    $("#certSkill").textContent = skill;
-    $("#certScore").textContent = `${pct}%`;
-    $("#certLevel").textContent = level;
-    $("#medal").textContent     = medal;
-    $("#certDate").textContent  = date;
-
-    // Create UID + payload
-    const uid = makeUID(8);
-    const payload = btoa(encodeURIComponent(JSON.stringify({uid,name,skill,score:pct,level,date})));
-    const fullVerifyLink = `${baseURL()}verify.html?p=${payload}`;
-    const shortVerifyText = `${baseURL()}verify.html`;
-
-    $("#certUID").textContent = uid;
-    const a = document.getElementById('certVerifyText');
-    a.textContent = shortVerifyText; // clean text
-    a.href = fullVerifyLink;         // but clickable opens full encoded link
-
-    $("#certArea").classList.remove('hidden');
-  }
-
-  /* Export PDF */
-  async function autoDownloadPDF(){
-    const node = document.getElementById('certCard');
-    try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch(e){}
-    await Promise.all([...node.querySelectorAll('img')].map(img=>{
-      if(img.complete && img.naturalWidth>0) return;
-      return new Promise(res=>{ img.onload=res; img.onerror=res; });
-    }));
-    const W = 1654, H = 1169;
-    try{
-      const dataUrl = await htmlToImage.toPng(node, {
-        pixelRatio: 2, cacheBust: true, width: W, height: H,
-        style: { transform:'scale(1)', width: W+'px', height: H+'px' }
-      });
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({orientation:'landscape', unit:'pt', format:'a4'});
-      const pageW = pdf.internal.pageSize.getWidth(), pageH = pdf.internal.pageSize.getHeight();
-      const r = Math.min(pageW/W, pageH/H), w = W*r, h = H*r;
-      pdf.addImage(dataUrl,'PNG',(pageW-w)/2,(pageH-h)/2,w,h);
-      pdf.save('SkillCert_Certificate.pdf');
-      window.scrollTo({top:0,behavior:'smooth'});
-      toast("🎉 Certificate downloaded! Gold + blue design applied.");
-    }catch(e){
-      console.error(e);
-      toast("PDF export failed. Refresh and try again.");
-    }
-  }
-
-  /* Toast */
-  function toast(msg){
-    const el=document.createElement('div');
-    el.textContent=msg;
-    el.className="fixed left-1/2 -translate-x-1/2 bottom-6 px-4 py-2 rounded-xl text-white text-sm shadow-lg z-50";
-    el.style.background="linear-gradient(90deg, #1e40af, #3b82f6, #06b6d4)";
-    document.body.appendChild(el);
-    setTimeout(()=>{ el.style.opacity='.0'; el.style.transition='opacity .5s'; setTimeout(()=>el.remove(),500); },2200);
-  }
-
-  document.getElementById('year').textContent = new Date().getFullYear();
 </script>
 </body>
 </html>
