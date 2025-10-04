@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <style>
-    :root { --a:#6366f1; --b:#06b6d4; --c:#10b981; --d:#f59e0b; }
+    :root { --indigo:#6366f1; --cyan:#06b6d4; --emerald:#10b981; --amber:#f59e0b; --gold1:#fde68a; --gold2:#fbbf24; --gold3:#f59e0b; }
     body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#f6f9fc; }
     .hero {
       background:
@@ -28,17 +28,64 @@
     }
     .card { transition: transform .15s ease, box-shadow .2s ease; }
     .card:hover { transform: translateY(-3px); box-shadow: 0 25px 40px rgba(2,6,23,.10); }
-    /* Certificate */
-    .cert-gradient {
-      background:
-        radial-gradient(1200px 600px at -10% -10%, rgba(99,102,241,.25), transparent 60%),
-        radial-gradient(1000px 600px at 110% -20%, rgba(6,182,212,.25), transparent 60%),
-        linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+
+    /* ===== CloudHire-inspired certificate ===== */
+    .cert-paper {
+      background:#ffffff;
+      border:6px solid #5b6ee5;              /* outer blue border */
+      border-radius:22px;
+      position:relative;
     }
-    .frame { box-shadow: inset 0 0 0 2px rgba(15,23,42,.08), inset 0 0 0 14px rgba(148,163,184,.12); }
-    .seal {
-      background: conic-gradient(from 0deg, #fde68a, #fbbf24, #f59e0b, #fbbf24, #fde68a);
+    .cert-inner {
+      border:3px solid #c7d2fe;              /* inner pale border */
+      border-radius:16px;
+      height:100%;
     }
+    /* corner ornaments (simple floral-like svg) */
+    .orn { position:absolute; width:120px; height:120px; opacity:.85; }
+    .orn svg { width:100%; height:100%; }
+    .orn.tl { left:-8px; top:-6px; transform:rotate(0deg); }
+    .orn.tr { right:-8px; top:-6px; transform:scaleX(-1); }
+    .orn.bl { left:-8px; bottom:-6px; transform:scaleY(-1); }
+    .orn.br { right:-8px; bottom:-6px; transform:scale(-1); }
+
+    /* headline like "CERTIFICATE" */
+    .cert-title {
+      letter-spacing: .08em;
+      color:#5a4633; /* warm brown like sample */
+    }
+    /* thin rule with dots at ends */
+    .fancy-hr {
+      position: relative;
+      height: 2px;
+      background: #3b82f6;
+      margin: 12px 0 18px 0;
+    }
+    .fancy-hr::before,
+    .fancy-hr::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 8px; height: 8px;
+      background: #38bdf8; border:2px solid #0ea5e9; border-radius: 9999px;
+      transform: translateY(-50%);
+    }
+    .fancy-hr::before { left: -14px; }
+    .fancy-hr::after  { right: -14px; }
+
+    /* medal badge */
+    .medal {
+      width:88px; height:88px; border-radius:9999px;
+      background: radial-gradient(circle at 35% 35%, var(--gold1), var(--gold2) 45%, var(--gold3));
+      box-shadow: inset 0 6px 12px rgba(0,0,0,.08), 0 8px 18px rgba(0,0,0,.15);
+      display:flex; align-items:center; justify-content:center;
+      color:#fff; font-weight:800; font-size:28px;
+      border:4px solid #fef08a;
+    }
+
+    /* modal */
+    .modal { display:none; }
+    .modal.show { display:flex; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -82,22 +129,22 @@
       <div id="skillsGrid" class="mt-3 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2"></div>
     </section>
 
-    <!-- Details Form -->
+    <!-- Details -->
     <section id="form" class="rounded-2xl border bg-white p-4">
       <h2 class="text-base font-semibold mb-3">Your Details</h2>
       <div class="grid sm:grid-cols-3 gap-3">
         <label class="block text-sm">Full Name
-          <input id="userName" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="e.g., Rahul Satav">
+          <input id="userName" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="e.g., R S Satav">
         </label>
         <label class="block text-sm">Email (demo)
           <input id="userEmail" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="rahul@gmail.com">
         </label>
         <label class="block text-sm">Selected Skill (editable)
-          <input id="skillName" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="e.g., React">
+          <input id="skillName" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="e.g., Java">
         </label>
       </div>
       <div class="mt-3">
-        <button id="startQuizBtn" class="px-4 py-2 rounded-xl text-white bg-gradient-to-r from-[var(--a)] via-[var(--b)] to-[var(--c)] shadow">
+        <button id="startQuizBtn" class="px-4 py-2 rounded-xl text-white bg-gradient-to-r from-[var(--indigo)] via-[var(--cyan)] to-[var(--emerald)] shadow">
           Start 5-Question Quiz
         </button>
         <span class="text-xs text-slate-500 ml-2">Email must be <b>rahul@gmail.com</b> (demo).</span>
@@ -117,47 +164,63 @@
       </div>
     </section>
 
-    <!-- Hidden Certificate (rendered then exported) -->
+    <!-- Hidden Certificate area (rendered then exported as PDF) -->
     <section id="certArea" class="hidden">
-      <div id="certCard" class="relative mx-auto aspect-[1.414/1] w-full max-w-[1100px] rounded-2xl cert-gradient border frame shadow-xl overflow-hidden">
-        <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(1000px 400px at 20% 0,#a78bfa 0,transparent 60%), radial-gradient(1000px 400px at 90% 0,#22d3ee 0,transparent 60%);"></div>
-        <div class="relative z-10 h-full p-10 md:p-14 flex flex-col">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex items-center gap-3">
-              <img src="assets/logo.svg" class="h-11 w-11" alt="logo"/>
-              <div class="leading-tight">
-                <div class="text-[11px] tracking-[0.35em] text-slate-500 font-semibold">SKILLCERT</div>
-                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Certificate of Achievement</h2>
-              </div>
-            </div>
-            <div class="seal rounded-full w-16 h-16 border-4 border-amber-300 shadow-inner"></div>
-          </div>
-
-          <div class="mt-8 text-slate-800">
-            <p class="text-sm">This certifies that</p>
-            <p class="mt-1 text-4xl md:text-6xl font-extrabold tracking-tight capitalize" id="certName">Candidate</p>
-            <p class="mt-4 text-sm">has demonstrated skill in</p>
-            <p class="mt-1 text-3xl md:text-4xl font-bold" id="certSkill">Skill</p>
-            <p class="mt-4 max-w-3xl text-sm leading-relaxed text-slate-600">
-              For demonstrating practical expertise via a proctored 5-question assessment and meeting the passing criteria.
-            </p>
-          </div>
-
-          <div class="mt-auto grid grid-cols-2 gap-6 pt-10">
-            <div class="space-y-1">
-              <div class="h-9 w-40 border-b border-slate-400"></div>
-              <p class="text-sm font-medium">Issued by Rahul Shahaji Satav</p>
-              <p class="text-xs text-slate-500">Date: <span id="certDate"></span></p>
-            </div>
-            <div class="flex items-end justify-end">
-              <div class="text-right">
-                <p class="text-[11px] text-slate-500">Add this certificate to your resume and LinkedIn — great for job calls.</p>
-              </div>
-            </div>
-          </div>
+      <div id="certCard" class="relative mx-auto aspect-[1.414/1] w-full max-w-[1100px] cert-paper overflow-hidden">
+        <!-- corner ornaments -->
+        <div class="orn tl">
+          <svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg>
+        </div>
+        <div class="orn tr">
+          <svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg>
+        </div>
+        <div class="orn bl">
+          <svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg>
+        </div>
+        <div class="orn br">
+          <svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg>
         </div>
 
-        <div class="pointer-events-none absolute inset-6 rounded-2xl border-2 border-slate-300"></div>
+        <div class="cert-inner rounded-[12px]">
+          <div class="h-full w-full p-8 md:p-12 flex flex-col">
+            <!-- Top Headings -->
+            <div class="text-center">
+              <div class="text-3xl md:text-5xl font-extrabold cert-title">CERTIFICATE</div>
+              <div class="mt-1 text-sm md:text-base tracking-[0.25em] text-slate-600 font-semibold">OF TAKING SKILL TEST</div>
+              <div class="mt-6 text-[12px] md:text-sm tracking-wide text-slate-600">This Certificate Is Presented To</div>
+              <div id="certName" class="mt-2 text-4xl md:text-6xl font-extrabold text-[#3157d4] capitalize">Candidate</div>
+            </div>
+
+            <!-- Rule -->
+            <div class="mx-10 md:mx-20 mt-6">
+              <div class="fancy-hr"></div>
+            </div>
+
+            <!-- Body text -->
+            <div class="mt-4 md:mt-6 text-center text-[13px] md:text-base text-slate-700 leading-relaxed px-6 md:px-20">
+              Has successfully completed the <b id="certSkill">Skill</b> skill test,  
+              demonstrating exceptional professional expertise with a score 
+              <b id="certScore">80%</b>, earning a <b id="certLevel">Proficient</b> level certification.
+            </div>
+
+            <!-- Medal + Brand -->
+            <div class="mt-auto grid grid-cols-2 gap-6 px-8 md:px-12 pb-6 md:pb-8">
+              <div class="flex items-center gap-4">
+                <div id="medal" class="medal">2</div>
+                <div class="text-xs text-slate-500">
+                  Date: <span id="certDate"></span><br/>
+                  Issued by <b>Rahul Shahaji Satav</b>
+                </div>
+              </div>
+              <div class="flex items-end justify-end">
+                <div class="flex items-center gap-2">
+                  <img src="assets/logo.svg" class="h-7 w-7" alt="logo">
+                  <div class="text-2xl font-bold" style="background:linear-gradient(90deg,#2563eb,#06b6d4); -webkit-background-clip:text; color:transparent">SkillCert</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> <!-- /inner -->
       </div>
     </section>
 
@@ -168,7 +231,7 @@
   </footer>
 
   <!-- Modern Fail Modal -->
-  <div id="failModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+  <div id="failModal" class="modal fixed inset-0 bg-black/50 backdrop-blur-sm items-center justify-center p-4 z-50">
     <div class="w-full max-w-sm rounded-2xl bg-white shadow-xl p-5">
       <div class="flex items-start gap-3">
         <div class="mt-1 shrink-0 w-10 h-10 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-lg">✖</div>
@@ -179,7 +242,7 @@
       </div>
       <div class="mt-4 flex gap-2 justify-end">
         <button id="closeFail" class="px-3 py-1.5 rounded-lg border bg-white">Close</button>
-        <button id="retakeBtn" class="px-3 py-1.5 rounded-lg text-white" style="background: linear-gradient(90deg, var(--a), var(--b));">🔄 Retake quiz</button>
+        <button id="retakeBtn" class="px-3 py-1.5 rounded-lg text-white" style="background: linear-gradient(90deg, var(--indigo), var(--cyan));">🔄 Retake quiz</button>
       </div>
     </div>
   </div>
@@ -260,7 +323,6 @@
       {q:"Docs should be…",a:["Clear & updated","Skipped","Private only","Screenshots"],c:0}
     ];
 
-    // Build quiz
     $("#quizContainer").innerHTML = "";
     set.slice(0,5).forEach((item,idx)=>{
       const div = document.createElement('div');
@@ -281,7 +343,7 @@
     fancyScroll('#quiz');
   });
 
-  /* ---------- submit quiz (with modern fail modal + retake) ---------- */
+  /* ---------- submit quiz -> modal on fail / auto PDF on pass ---------- */
   const failModal = $("#failModal");
   const closeFail = $("#closeFail");
   const retakeBtn = $("#retakeBtn");
@@ -290,8 +352,7 @@
     let score = 0;
     for(let i=0;i<5;i++){
       const chosen = document.querySelector(`input[name="q${i}"]:checked`);
-      // in our sets, correct answers are at index 0
-      if(chosen && Number(chosen.value)===0) score++;
+      if(chosen && Number(chosen.value)===0) score++; // our banks use index 0 as correct
     }
     const pct = Math.round((score/5)*100);
     const res = $("#quizResult");
@@ -299,37 +360,39 @@
     res.className = "text-sm font-medium " + (pct>=80?"text-emerald-600":"text-rose-600");
 
     if(pct>=80){
-      // Build certificate DOM then export to PDF
-      buildCertificate();
+      buildCertificate(pct);
       await new Promise(r=>setTimeout(r,200)); // small paint delay
       autoDownloadPDF();
     } else {
-      // Show modern modal with retake
-      failModal.classList.remove('hidden');
-      failModal.classList.add('flex');
+      failModal.classList.add('show','flex');
     }
   });
 
-  closeFail.addEventListener('click', ()=> {
-    failModal.classList.add('hidden');
-    failModal.classList.remove('flex');
-  });
-
+  closeFail.addEventListener('click', ()=> failModal.classList.remove('show','flex'));
   retakeBtn.addEventListener('click', ()=> {
-    // Reset all quiz radio buttons
     for (let i=0;i<5;i++){
       document.querySelectorAll(`input[name="q${i}"]`).forEach(inp=>inp.checked=false);
     }
     $("#quizResult").textContent="";
-    failModal.classList.add('hidden');
-    failModal.classList.remove('flex');
+    failModal.classList.remove('show','flex');
     fancyScroll('#quiz');
   });
 
-  /* ---------- certificate builder ---------- */
-  function buildCertificate(){
-    $("#certName").textContent = $("#userName").value.trim();
+  /* ---------- compute level + medal ---------- */
+  function computeLevel(pct){
+    if(pct>=93) return {level:"Advanced", medal:"1"};
+    if(pct>=85) return {level:"Proficient", medal:"2"};
+    return {level:"Intermediate", medal:"3"};
+  }
+
+  /* ---------- build certificate ---------- */
+  function buildCertificate(pct){
+    $("#certName").textContent  = $("#userName").value.trim();
     $("#certSkill").textContent = $("#skillName").value.trim();
+    $("#certScore").textContent = `${pct}%`;
+    const {level, medal} = computeLevel(pct);
+    $("#certLevel").textContent = level;
+    $("#medal").textContent = medal;
     $("#certDate").textContent  = new Date().toLocaleDateString();
     $("#certArea").classList.remove('hidden');
   }
@@ -337,7 +400,7 @@
   /* ---------- export PDF ---------- */
   async function autoDownloadPDF(){
     const node = document.getElementById('certCard');
-    // ensure all images are loaded
+    // ensure images loaded
     await Promise.all([...node.querySelectorAll('img')].map(img=>{
       if(img.complete && img.naturalWidth>0) return Promise.resolve();
       return new Promise(res=>{ img.onload=res; img.onerror=res; });
@@ -346,20 +409,19 @@
       const dataUrl = await htmlToImage.toPng(node,{pixelRatio:2,cacheBust:true,useCORS:true});
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF({orientation:'landscape', unit:'pt', format:'a4'});
-      const pageW = pdf.internal.pageSize.getWidth();
-      const pageH = pdf.internal.pageSize.getHeight();
+      const W = pdf.internal.pageSize.getWidth(), H = pdf.internal.pageSize.getHeight();
       const img = new Image(); img.src = dataUrl;
       img.onload = () => {
-        const ratio = Math.min(pageW/img.width, pageH/img.height);
-        const w = img.width * ratio, h = img.height * ratio;
-        pdf.addImage(dataUrl, 'PNG', (pageW-w)/2, (pageH-h)/2, w, h);
+        const r = Math.min(W/img.width, H/img.height);
+        const w = img.width*r, h = img.height*r;
+        pdf.addImage(dataUrl,'PNG',(W-w)/2,(H-h)/2,w,h);
         pdf.save('SkillCert_Certificate.pdf');
         window.scrollTo({top:0,behavior:'smooth'});
         toast("🎉 Certificate downloaded! Add it to your resume and LinkedIn.");
       };
     }catch(e){
       console.error(e);
-      toast("PDF export failed. Try once more (refresh).");
+      toast("PDF export failed. Refresh and try again.");
     }
   }
 
@@ -368,12 +430,11 @@
     const el=document.createElement('div');
     el.textContent=msg;
     el.className="fixed left-1/2 -translate-x-1/2 bottom-6 px-4 py-2 rounded-xl text-white text-sm shadow-lg z-50";
-    el.style.background="linear-gradient(90deg, var(--a), var(--b), var(--c))";
+    el.style.background="linear-gradient(90deg, var(--indigo), var(--cyan), var(--emerald))";
     document.body.appendChild(el);
     setTimeout(()=>{ el.style.opacity='.0'; el.style.transition='opacity .5s'; setTimeout(()=>el.remove(),500); },2200);
   }
 
-  /* footer year */
   document.getElementById('year').textContent = new Date().getFullYear();
 </script>
 </body>
