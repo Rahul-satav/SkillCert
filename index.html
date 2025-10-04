@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SkillCert — Instant Skill Certificates (Quiz + UPI + PDF)</title>
+  <meta name="description" content="Create verifiable skill certificates in minutes. Take a 5-question quiz, pay via UPI, and download a recruiter-ready certificate with QR verification."/>
+  <link rel="icon" href="assets/logo.svg">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <style>
+    :root { --brand:#7c3aed; --brand2:#06b6d4; --brand3:#f59e0b; }
+    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    .glass { backdrop-filter: blur(10px); background: rgba(255,255,255,0.65); }
+    .hero {
+      background: radial-gradient(1200px 500px at 10% -20%, rgba(236,72,153,.18), transparent 60%),
+                  radial-gradient(1000px 500px at 90% 0%, rgba(34,197,94,.12), transparent 60%),
+                  linear-gradient(135deg, rgba(124,58,237,.06), rgba(6,182,212,.06));
+    }
+    .btn { transition: transform .15s ease, box-shadow .2s ease; }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(124,58,237,.18); }
+    .frame { box-shadow: inset 0 0 0 2px rgba(15,23,42,.08), inset 0 0 0 14px rgba(148,163,184,.12); }
+  </style>
+</head>
+<body class="hero min-h-screen bg-gradient-to-br from-white to-slate-50 text-slate-800">
+  <header class="sticky top-0 z-30 border-b bg-white/70 glass">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="assets/logo.svg" alt="logo" class="h-7 w-7"/>
+        <h1 class="text-lg font-semibold">SkillCert — Instant Certificates</h1>
+      </div>
+      <nav class="text-sm text-slate-600 flex items-center gap-2">
+        <span>All-in-one</span> • <span>Quiz</span> • <span>UPI QR</span> • <span>PDF</span>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-8">
+    <section class="rounded-2xl border p-5 bg-white/80">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div>
+          <h2 class="text-xl font-semibold">Create & Verify Skill Certificates</h2>
+          <p class="text-sm text-slate-600">5-question assessment • Pay via UPI • Download PDF/PNG • QR verification page for recruiters</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 border">Fast</span>
+          <span class="text-xs px-2 py-1 rounded-full bg-violet-100 text-violet-700 border">Verifiable</span>
+          <span class="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700 border">Recruiter-ready</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Owner Settings -->
+    <section class="rounded-2xl border p-4">
+      <h2 class="text-base font-semibold mb-2">Owner Settings</h2>
+      <div class="grid sm:grid-cols-3 gap-3 text-sm">
+        <label class="block">UPI ID
+          <input id="upiId" class="mt-1 w-full rounded-lg border px-3 py-2" value="rahulsatav5062-3@okaxis">
+        </label>
+        <label class="block">Payee Name
+          <input id="payeeName" class="mt-1 w-full rounded-lg border px-3 py-2" value="Rahul Shahaji Satav">
+        </label>
+        <label class="block">Site Base URL (for verify links)
+          <input id="siteBase" class="mt-1 w-full rounded-lg border px-3 py-2" value="https://rahul-satav.github.io/SkillCert/">
+        </label>
+      </div>
+      <p class="text-xs text-slate-500 mt-2">Used to generate permanent <code>verify.html?uid=XXXX</code> links.</p>
+    </section>
+
+    <!-- Skills -->
+    <section class="rounded-2xl border p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-semibold">Popular Skills</h2>
+        <p class="text-xs text-slate-500">Pick from list or enter your own.</p>
+      </div>
+      <div id="skillsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2"></div>
+    </section>
+
+    <!-- Login & Input -->
+    <section class="rounded-2xl border p-4">
+      <h2 class="text-base font-semibold mb-3">Login & Start</h2>
+      <div class="grid sm:grid-cols-2 gap-3">
+        <label class="block text-sm">Your Name
+          <input id="userName" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="e.g., Rahul Satav">
+        </label>
+        <label class="block text-sm">Email
+          <input id="userEmail" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="e.g., rahul@example.com">
+        </label>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-3 mt-3">
+        <label class="block text-sm">Skill Name
+          <input id="skillName" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="e.g., Java + Spring Boot">
+        </label>
+        <label class="block text-sm">Level
+          <select id="skillLevel" class="mt-1 w-full rounded-lg border px-3 py-2">
+            <option>Beginner</option><option>Intermediate</option><option selected>Proficient</option><option>Advanced</option>
+          </select>
+        </label>
+      </div>
+      <div class="mt-4">
+        <button id="startQuizBtn" class="btn px-4 py-2 rounded-xl bg-gradient-to-r from-[var(--brand)] via-[var(--brand2)] to-[var(--brand3)] text-white font-medium shadow">
+          Start 5-Question Quiz
+        </button>
+        <span class="ml-3 text-xs text-slate-500">Score ≥ 80% to unlock certificate.</span>
+      </div>
+    </section>
+
+    <!-- Quiz -->
+    <section id="quizSection" class="hidden rounded-2xl border p-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-semibold">Quiz: <span id="quizSkill"></span></h2>
+        <p class="text-xs text-slate-500">5 questions • Need 4/5</p>
+      </div>
+      <div id="quizContainer" class="mt-3 space-y-4"></div>
+      <div class="mt-4 flex items-center gap-2">
+        <button id="submitQuizBtn" class="btn px-4 py-2 rounded-xl bg-slate-900 text-white shadow">Submit Quiz</button>
+        <p id="quizResult" class="text-sm font-medium"></p>
+      </div>
+    </section>
+
+    <!-- Payment -->
+    <section id="paymentSection" class="hidden rounded-2xl border p-4">
+      <h2 class="text-base font-semibold mb-3">Pay & Download Certificate</h2>
+      <div class="grid sm:grid-cols-3 gap-3 items-end">
+        <label class="block text-sm">Choose Fee
+          <select id="feeAmount" class="mt-1 w-full rounded-lg border px-3 py-2">
+            <option value="200" selected>₹200</option>
+            <option value="500">₹500</option>
+          </select>
+        </label>
+        <div class="text-sm">
+          <p>Scan UPI QR to pay</p>
+          <canvas id="upiQr" class="border rounded-lg mt-1"></canvas>
+          <p class="text-[11px] text-slate-500 mt-1" id="upiText"></p>
+        </div>
+        <div class="text-sm">
+          <label class="block">Payment Reference (UTR) <span class="text-xs text-slate-500">(optional)</span>
+            <input id="utr" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="Enter UTR / Ref no.">
+          </label>
+          <label class="mt-2 inline-flex items-center gap-2 text-sm">
+            <input type="checkbox" id="confirmPaid" class="scale-110">
+            <span>I have completed the payment</span>
+          </label>
+        </div>
+      </div>
+      <div class="mt-4 flex items-center gap-2">
+        <button id="unlockBtn" class="btn px-4 py-2 rounded-xl bg-emerald-600 text-white disabled:opacity-50 shadow" disabled>Unlock Certificate</button>
+        <span class="text-xs text-slate-500">Demo is trust-based. Gateways need server/token.</span>
+      </div>
+    </section>
+
+    <!-- Certificate -->
+    <section id="certSection" class="hidden rounded-2xl border p-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-semibold">Your Certificate</h2>
+        <div class="flex gap-2">
+          <button id="pngBtn" class="btn px-3 py-1.5 rounded-lg bg-slate-200">Download PNG</button>
+          <button id="pdfBtn" class="btn px-3 py-1.5 rounded-lg bg-slate-900 text-white">Download PDF</button>
+        </div>
+      </div>
+      <p id="uploadHint" class="mt-2 text-xs text-amber-600 hidden"></p>
+      <div id="postActions" class="mt-2 hidden flex items-center gap-2">
+        <button id="copyPathBtn" class="btn px-3 py-1.5 rounded-lg bg-white border">📋 Copy Upload Path</button>
+        <a id="openGithubBtn" target="_blank" class="btn px-3 py-1.5 rounded-lg bg-white border underline">Open GitHub Upload</a>
+        <button id="shareLinkedInBtn" class="btn px-3 py-1.5 rounded-lg text-white" style="background: #0a66c2;">Share on LinkedIn</button>
+      </div>
+      <div class="mt-3 overflow-auto">
+        <div id="certCard" class="relative mx-auto aspect-[1.414/1] w-full max-w-[1100px] rounded-2xl bg-white shadow border frame">
+          <!-- bg -->
+          <svg class="absolute inset-0 h-full w-full rounded-2xl" viewBox="0 0 1600 1131" preserveAspectRatio="none">
+            <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0%" stop-color="#f8fafc" /><stop offset="100%" stop-color="#eef2ff" /></linearGradient></defs>
+            <rect x="0" y="0" width="1600" height="1131" fill="url(#g1)"></rect>
+            <g opacity="0.20"><circle cx="1380" cy="160" r="120" fill="#dbeafe"></circle><circle cx="220" cy="980" r="140" fill="#e2e8f0"></circle></g>
+          </svg>
+          <!-- content -->
+          <div class="relative z-10 h-full p-10 md:p-14 flex flex-col">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <img src="assets/logo.svg" class="h-11 w-11" alt="logo"/>
+                <div class="leading-tight">
+                  <div class="text-[11px] tracking-[0.35em] text-slate-500 font-semibold">SKILLCERT</div>
+                  <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Certificate of Achievement</h2>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium shadow-sm bg-white/80">
+                  Level: <span id="certLevel" class="ml-1">Proficient</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-8 text-slate-800">
+              <p class="text-sm">This certifies that</p>
+              <p class="mt-1 text-4xl md:text-6xl font-extrabold tracking-tight" id="certName">Name</p>
+              <p class="mt-4 text-sm">has demonstrated skill in</p>
+              <p class="mt-1 text-3xl md:text-4xl font-bold" id="certSkill">Skill</p>
+              <p class="mt-4 max-w-3xl text-sm leading-relaxed text-slate-600" id="certNotes">For demonstrating practical expertise via a proctored 5-question assessment and meeting the passing criteria.</p>
+            </div>
+
+            <div class="mt-auto grid grid-cols-2 gap-6 pt-10">
+              <div class="space-y-1">
+                <div class="h-9 w-40 border-b border-slate-400"></div>
+                <p class="text-sm font-medium">Issued by <span id="payeeNameSpan">Rahul Shahaji Satav</span></p>
+                <p class="text-xs text-slate-500">Date: <span id="certDate"></span></p>
+                <p class="text-xs text-slate-500">UID: <span id="certUid"></span></p>
+              </div>
+              <div class="flex items-end justify-end">
+                <div class="flex flex-col items-center">
+                  <div class="rounded-lg border p-2 bg-white">
+                    <img id="verifyQr" class="h-24 w-24" alt="Verify QR"/>
+                  </div>
+                  <p class="mt-2 text-[11px] text-slate-600 font-medium">Scan to verify</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="pointer-events-none absolute inset-6 rounded-2xl border-2 border-slate-300"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="py-8 text-center text-xs text-slate-500">
+    © <span id="year"></span> SkillCert • Add this certificate to your résumé & LinkedIn — it includes a verification QR and UID to boost recruiter trust.
+  </footer>
+
+<script>
+// Popular skills
+const popularSkills = ["Java + Spring Boot","Angular","React","Node.js","Python","Django","Machine Learning","Data Analysis","AWS","Azure","GCP","DevOps","Docker","Kubernetes","SQL","NoSQL","Cybersecurity","Ethical Hacking","UI/UX Design","HTML & CSS","JavaScript","TypeScript","Flutter","React Native","C++","C#",".NET","Power BI","Tableau","Salesforce","QA Automation","Selenium","SAP","Blockchain","Generative AI"];
+const questionBank = {"Java + Spring Boot":[{q:"Which annotation starts a Spring Boot application?",a:["@SpringBootApplication","@EnableAutoConfiguration","@ComponentScan","@RestController"],c:0},{q:"Default embedded server in Spring Boot is…",a:["Tomcat","Jetty","Undertow","Netty"],c:0},{q:"Which file holds app config?",a:["application.properties","pom.xml","settings.gradle","bootstrap.yml"],c:0},{q:"JPA stands for…",a:["Java Persistence API","Java Package API","Java Processing API","JSON Persistence API"],c:0},{q:"Which annotation maps HTTP GET?",a:["@GetMapping","@PostMapping","@RequestBody","@PathVariable"],c:0}],"React":[{q:"State update is…",a:["Asynchronous","Synchronous","Blocking","None"],c:0},{q:"Keys in lists should be…",a:["Stable & unique","Random each render","Array index always","Same for all"],c:0},{q:"Hook for side effects?",a:["useEffect","useState","useMemo","useRef"],c:0},{q:"JSX compiles to…",a:["React.createElement calls","HTML strings","DOM nodes","CSS rules"],c:0},{q:"To lift state up you…",a:["Move state to common parent","Use refs","Global variable","Context only"],c:0}]};
+function uid(){ return Math.random().toString(36).slice(2,10).toUpperCase(); }
+
+// Skills grid
+const grid=document.getElementById('skillsGrid');
+popularSkills.forEach(s=>{const b=document.createElement('button');b.textContent=s;b.className="px-3 py-2 rounded-lg border hover:bg-slate-100 text-sm";b.onclick=()=>{document.getElementById('skillName').value=s;window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});};grid.appendChild(b);});
+
+// Quiz
+const startBtn=document.getElementById('startQuizBtn');const quizSection=document.getElementById('quizSection');const quizSkillSpan=document.getElementById('quizSkill');const quizContainer=document.getElementById('quizContainer');let currentQuestions=[];let score=0;
+startBtn.onclick=()=>{const name=document.getElementById('userName').value.trim();const email=document.getElementById('userEmail').value.trim();const skill=document.getElementById('skillName').value.trim();if(!name||!email||!skill){alert("Please enter name, email and skill.");return;}const bank=questionBank[skill]||[{q:`${skill}: Which statement is true?`,a:["It improves with practice","It cannot be measured","Only theory matters","None"],c:0},{q:"A strong project portfolio shows…",a:["Applied skill","Only certificates","Only grades","Only theory"],c:0},{q:"Version control commonly used is…",a:["Git","SVN only","Zip files","Email"],c:0},{q:"Writing tests helps…",a:["Quality & confidence","Slow everything","Costs only","Nothing"],c:0},{q:"Documentation should be…",a:["Clear & updated","Skipped","Private only","In screenshots"],c:0}];currentQuestions=bank.slice(0,5);quizContainer.innerHTML="";currentQuestions.forEach((item,idx)=>{const div=document.createElement('div');div.className="rounded-xl border p-3 bg-white/80";div.innerHTML=`<p class="font-medium">${idx+1}. ${item.q}</p><div class="mt-2 grid sm:grid-cols-2 gap-2">${item.a.map((opt,i)=>`<label class="inline-flex items-center gap-2 text-sm"><input type="radio" name="q${idx}" value="${i}"><span>${opt}</span></label>`).join('')}</div>`;quizContainer.appendChild(div);});document.getElementById('quizResult').textContent="";quizSkillSpan.textContent=skill;quizSection.classList.remove('hidden');document.getElementById('paymentSection').classList.add('hidden');document.getElementById('certSection').classList.add('hidden');};
+document.getElementById('submitQuizBtn').onclick=()=>{score=0;currentQuestions.forEach((q,idx)=>{const chosen=document.querySelector(`input[name="q${idx}"]:checked`);if(chosen&&Number(chosen.value)===q.c)score++;});const pct=Math.round((score/5)*100);const res=document.getElementById('quizResult');res.textContent=`Score: ${score}/5 (${pct}%)`;res.className="text-sm font-medium "+(pct>=80?"text-emerald-600":"text-rose-600");if(pct>=80){setupPayment();}};
+
+// Payment
+function upiUrl(upiId,payeeName,amount,note){const params=new URLSearchParams({pa:upiId,pn:payeeName,am:String(amount),cu:"INR",tn:note});return "upi://pay?"+params.toString();}
+function setupPayment(){document.getElementById('paymentSection').classList.remove('hidden');renderUpiQr();}
+function renderUpiQr(){const upiId=document.getElementById('upiId').value.trim();const pn=document.getElementById('payeeName').value.trim()||"SkillCert";const amount=Number(document.getElementById('feeAmount').value);const name=document.getElementById('userName').value.trim();const skill=document.getElementById('skillName').value.trim();const note=`Cert fee ${amount} — ${name} (${skill})`;const url=upiUrl(upiId,pn,amount,note);const canvas=document.getElementById('upiQr');const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);QRCode.toCanvas(canvas,url,{width:180,margin:1},(e)=>{if(e)console.error(e);} );document.getElementById('upiText').textContent=`${upiId} • ₹${amount}`;}
+document.getElementById('feeAmount').addEventListener('change',renderUpiQr);document.getElementById('upiId').addEventListener('change',renderUpiQr);document.getElementById('payeeName').addEventListener('change',renderUpiQr);document.getElementById('confirmPaid').addEventListener('change',()=>{document.getElementById('unlockBtn').disabled=!document.getElementById('confirmPaid').checked;});
+document.getElementById('unlockBtn').onclick=()=>{document.getElementById('certSection').classList.remove('hidden');buildCertificate();window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});};
+
+// Certificate + JSON + actions
+let lastUID=null, lastVerifyUrl=null, lastSkill=null;
+async function buildCertificate(){
+  const name=document.getElementById('userName').value.trim();
+  const email=document.getElementById('userEmail').value.trim();
+  const skill=document.getElementById('skillName').value.trim();
+  const level=document.getElementById('skillLevel').value;
+  const siteBase=document.getElementById('siteBase').value.trim().replace(/\s+$/,'');
+  const id=uid();
+  const verifyUrl=(siteBase||"./")+"verify.html?uid="+id;
+  const date=new Date().toISOString().slice(0,10);
+
+  document.getElementById('certLevel').textContent=level;
+  document.getElementById('certName').textContent=name;
+  document.getElementById('certSkill').textContent=skill;
+  document.getElementById('payeeNameSpan').textContent=document.getElementById('payeeName').value.trim()||"SkillCert";
+  document.getElementById('certDate').textContent=new Date(date).toLocaleDateString();
+  document.getElementById('certUid').textContent=id;
+
+  const qrData=await QRCode.toDataURL(verifyUrl,{width:256,margin:1});
+  await new Promise((res,rej)=>{const img=document.getElementById('verifyQr');img.onload=()=>res();img.onerror=rej;img.src=qrData;});
+
+  const record={uid:id,name,skill,level,email,date,issuer:document.getElementById('payeeName').value.trim()||"SkillCert",verify_url:verifyUrl,status:"valid"};
+  const list=JSON.parse(localStorage.getItem('skillcert_issued')||"[]");list.unshift(record);localStorage.setItem('skillcert_issued',JSON.stringify(list));
+
+  const blob=new Blob([JSON.stringify(record,null,2)],{type:"application/json"});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=id+".json";a.click();
+
+  const hint=document.getElementById('uploadHint');
+  hint.classList.remove('hidden');
+  hint.innerHTML = "⬆️ Upload the downloaded file to your GitHub repo at <code>data/"+id+".json</code> to make the link permanent.";
+
+  const actions=document.getElementById('postActions');
+  actions.classList.remove('hidden');
+  const copyBtn=document.getElementById('copyPathBtn');
+  const openBtn=document.getElementById('openGithubBtn');
+  const shareBtn=document.getElementById('shareLinkedInBtn');
+  copyBtn.onclick=async()=>{await navigator.clipboard.writeText("data/"+id+".json");copyBtn.textContent="✅ Copied path";setTimeout(()=>copyBtn.textContent="📋 Copy Upload Path",1500);};
+  openBtn.href = "https://github.com/Rahul-satav/SkillCert/new/main?filename=data/"+id+".json";
+
+  lastUID=id; lastVerifyUrl=verifyUrl; lastSkill=skill;
+  shareBtn.onclick=()=>{const hashtags = ["SkillCert","Certification","TechJobs","RahulSatav", skill.replace(/[^a-z0-9]/gi,'')].map(t=>"#"+t.replace(/^#+/,'').replace(/\s+/g,''));const message = `🏅 I just earned my verified SkillCert certificate in ${skill}!\nProud to showcase my SkillCert credential by Rahul Satav 🚀\n\n✅ Verify my certificate here: ${verifyUrl}\n\n${hashtags.join(' ')}`;navigator.clipboard.writeText(message).catch(()=>{});const shareUrl = "https://www.linkedin.com/sharing/share-offsite/?url="+encodeURIComponent(verifyUrl);window.open(shareUrl, "_blank");};
+}
+
+document.getElementById('pngBtn').onclick=async()=>{const node=document.getElementById('certCard');const dataUrl=await htmlToImage.toPng(node,{pixelRatio:2});const a=document.createElement('a');a.href=dataUrl;a.download=`${document.getElementById('certName').textContent.replace(/\s+/g,'_')}_${document.getElementById('certSkill').textContent.replace(/\s+/g,'_')}_certificate.png`;a.click();};
+document.getElementById('pdfBtn').onclick=async()=>{const node=document.getElementById('certCard');const dataUrl=await htmlToImage.toPng(node,{pixelRatio:2});const { jsPDF } = window.jspdf;const pdf=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});const pageWidth=pdf.internal.pageSize.getWidth();const pageHeight=pdf.internal.pageSize.getHeight();const img=new Image();img.src=dataUrl;img.onload=()=>{const ratio=Math.min(pageWidth/img.width,pageHeight/img.height);const w=img.width*ratio,h=img.height*ratio;const x=(pageWidth-w)/2,y=(pageHeight-h)/2;pdf.addImage(dataUrl,'PNG',x,y,w,h);pdf.save('certificate.pdf');};};
+
+document.getElementById('year').textContent=new Date().getFullYear();
+</script>
+</body>
+</html>
