@@ -1,55 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verify • SkillCert</title>
-  <link rel="icon" href="assets/logo.svg">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Verify Certificate • SkillCert</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+  </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
-  <main class="max-w-3xl mx-auto p-6">
-    <div class="flex items-center gap-3 mb-4">
-      <img src="assets/logo.svg" class="h-8 w-8" alt="logo">
-      <h1 class="text-xl font-semibold">SkillCert • Verification</h1>
+<body class="min-h-screen bg-slate-50">
+  <header class="bg-white border-b sticky top-0">
+    <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="h-6 w-6 rounded-full bg-indigo-500"></div>
+        <span class="font-semibold">SkillCert — Verify</span>
+      </div>
+      <a href="./" class="text-sm text-indigo-600 hover:underline">Home</a>
     </div>
-    <div id="box" class="rounded-2xl border bg-white p-5">
-      <p class="text-sm text-slate-600">Checking certificate…</p>
+  </header>
+
+  <main class="max-w-3xl mx-auto p-4">
+    <h1 class="text-xl font-bold">Certificate Verification</h1>
+    <p class="text-sm text-slate-600 mt-1">This page confirms certificate details from a signed link.</p>
+
+    <div id="card" class="mt-4 rounded-2xl border bg-white p-4 hidden">
+      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+        <div><dt class="text-xs text-slate-500">UID</dt><dd class="font-semibold" id="v_uid">—</dd></div>
+        <div><dt class="text-xs text-slate-500">Name</dt><dd class="font-semibold" id="v_name">—</dd></div>
+        <div><dt class="text-xs text-slate-500">Skill</dt><dd class="font-semibold" id="v_skill">—</dd></div>
+        <div><dt class="text-xs text-slate-500">Score</dt><dd class="font-semibold" id="v_score">—</dd></div>
+        <div><dt class="text-xs text-slate-500">Level</dt><dd class="font-semibold" id="v_level">—</dd></div>
+        <div><dt class="text-xs text-slate-500">Date</dt><dd class="font-semibold" id="v_date">—</dd></div>
+      </dl>
+      <p class="text-xs text-slate-500 mt-3">If these details match the candidate’s certificate, the credential is valid.</p>
     </div>
-    <p class="mt-4 text-xs text-slate-500">Public verification page.</p>
+
+    <div id="error" class="mt-4 hidden rounded-xl border border-rose-200 bg-rose-50 text-rose-700 p-3 text-sm">
+      Invalid or missing verification data. Please use a proper SkillCert verify link.
+    </div>
   </main>
+
 <script>
-(async function(){
-  const uid = new URL(location.href).searchParams.get('uid');
-  const box = document.getElementById('box');
-  if(!uid){
-    box.innerHTML = '<p class="text-rose-600">Missing UID.</p>';
-    return;
-  }
-  try {
-    const res = await fetch('data/'+uid+'.json', { cache: 'no-store' });
-    if(!res.ok) throw 0;
-    const cert = await res.json();
-    box.innerHTML = `
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <h2 class="text-2xl font-bold tracking-tight">${cert.name}</h2>
-          <p class="text-sm text-slate-600">has been issued a SkillCert credential.</p>
-        </div>
-        <span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 border">Valid</span>
-      </div>
-      <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
-        <div class="rounded-xl border p-3"><div class="text-slate-500">Skill</div><div class="font-medium">${cert.skill}</div></div>
-        <div class="rounded-xl border p-3"><div class="text-slate-500">Level</div><div class="font-medium">${cert.level}</div></div>
-        <div class="rounded-xl border p-3"><div class="text-slate-500">UID</div><div class="font-mono">${cert.uid}</div></div>
-        <div class="rounded-xl border p-3"><div class="text-slate-500">Issued On</div><div class="font-medium">${cert.date}</div></div>
-      </div>
-      <div class="mt-4 text-xs text-slate-500">Issuer: ${cert.issuer} • Contact: ${cert.email || 'N/A'}</div>`;
-  } catch(e) {
-    box.innerHTML = `<p class="text-rose-600">Certificate not found for UID <span class="font-mono">${uid}</span>.</p>
-    <p class="text-xs text-slate-500 mt-2">Expected path: <code>data/${uid}.json</code> in your GitHub Pages repo.</p>`;
-  }
-})();
+  function qs(name){ return new URL(location.href).searchParams.get(name); }
+
+  (function(){
+    try{
+      const p = qs('p');
+      if(!p) throw new Error('no payload');
+      const obj = JSON.parse(decodeURIComponent(atob(p)));
+      const need = ['uid','name','skill','score','level','date'];
+      if(!need.every(k=>obj[k]!==undefined && obj[k]!==null)) throw new Error('bad payload');
+
+      const set = (id,val)=>document.getElementById(id).textContent = val;
+      set('v_uid',   obj.uid);
+      set('v_name',  obj.name);
+      set('v_skill', obj.skill);
+      set('v_score', obj.score + '%');
+      set('v_level', obj.level);
+      set('v_date',  obj.date);
+
+      document.getElementById('card').classList.remove('hidden');
+    }catch(e){
+      console.error(e);
+      document.getElementById('error').classList.remove('hidden');
+    }
+  })();
 </script>
 </body>
 </html>
