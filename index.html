@@ -7,47 +7,83 @@
   <meta name="description" content="Get a professional, recruiter-ready certificate by passing a quick 5-question skill test. Perfect for resume and jobs."/>
   <link rel="icon" href="assets/logo.svg"/>
 
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <!-- Export libs -->
   <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <style>
-    :root { --indigo:#6366f1; --cyan:#06b6d4; --emerald:#10b981; --gold1:#fde68a; --gold2:#fbbf24; --gold3:#f59e0b; }
-    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#f6f9fc; }
-    .hero {
-      background:
-        radial-gradient(900px 380px at 10% -20%, rgba(99,102,241,.28), transparent 60%),
-        radial-gradient(1100px 460px at 100% -10%, rgba(6,182,212,.28), transparent 60%),
-        linear-gradient(135deg, #4f46e5, #06b6d4 60%, #14b8a6);
+    :root{
+      --indigo:#3b82f6; /* blue accents for headings */
+      --blueDeep:#1e40af;
+      --cyan:#06b6d4;
+      --emerald:#10b981;
+      --gold1:#f5d381; /* warm golds */
+      --gold2:#f1c451;
+      --gold3:#d9a92d;
+      --ink:#2b2b2b;
     }
-    .card { transition: transform .15s ease, box-shadow .2s ease; }
-    .card:hover { transform: translateY(-3px); box-shadow: 0 25px 40px rgba(2,6,23,.10); }
+    body{ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#f6f9fc; color:#0f172a; }
+    .hero{
+      background:
+        radial-gradient(900px 380px at 10% -20%, rgba(59,130,246,.20), transparent 60%),
+        radial-gradient(1100px 460px at 100% -10%, rgba(6,182,212,.18), transparent 60%),
+        linear-gradient(135deg, #3b82f6, #06b6d4 60%, #14b8a6);
+    }
+    .card{ transition:transform .15s ease, box-shadow .2s ease; }
+    .card:hover{ transform:translateY(-3px); box-shadow:0 24px 36px rgba(2,6,23,.10); }
 
     /* ===== Fixed A4 landscape canvas (identical on phone & desktop) ===== */
-    .cert-canvas { width:1654px; height:1169px; }
-    .cert-canvas * { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+    .cert-canvas{ width:1654px; height:1169px; }
+    .cert-canvas *{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 
-    .cert-paper { background:#fff; border:6px solid #5b6ee5; border-radius:22px; position:relative; }
-    .cert-inner { border:3px solid #c7d2fe; border-radius:16px; height:100%; }
+    /* Gold + Blue frame (outer) */
+    .cert-paper{
+      position:relative;
+      border-radius:22px;
+      /* gold border using background + padding trick */
+      background:
+        linear-gradient(white, white) padding-box,
+        linear-gradient(135deg, #e9d8a6, #f1c451 30%, #d9a92d 70%, #b98a1f) border-box;
+      border:6px solid transparent;
+      box-shadow:0 24px 48px rgba(0,0,0,.08);
+    }
+    /* inner thin border in faint blue to keep your brand mix */
+    .cert-inner{
+      height:100%;
+      border-radius:16px;
+      background:#ffffff;
+      border:3px solid rgba(59,130,246,.18);
+    }
 
-    .orn { position:absolute; width:120px; height:120px; opacity:.85; }
-    .orn svg { width:100%; height:100%; }
-    .orn.tl { left:-8px; top:-6px; transform:rotate(0deg); }
-    .orn.tr { right:-8px; top:-6px; transform:scaleX(-1); }
-    .orn.bl { left:-8px; bottom:-6px; transform:scaleY(-1); }
-    .orn.br { right:-8px; bottom:-6px; transform:scale(-1); }
+    /* Gold corner flourishes */
+    .orn{ position:absolute; width:120px; height:120px; opacity:.95; }
+    .orn svg{ width:100%; height:100%; }
+    .orn.tl{ left:-10px; top:-8px; transform:rotate(0deg); }
+    .orn.tr{ right:-10px; top:-8px; transform:scaleX(-1); }
+    .orn.bl{ left:-10px; bottom:-8px; transform:scaleY(-1); }
+    .orn.br{ right:-10px; bottom:-8px; transform:scale(-1); }
 
-    .cert-title { letter-spacing:.08em; color:#5a4633; }
-    .fancy-hr { position:relative; height:2px; background:#3b82f6; margin:12px 0 18px; }
-    .fancy-hr::before,.fancy-hr::after{ content:""; position:absolute; top:50%; width:8px;height:8px; background:#38bdf8; border:2px solid #0ea5e9; border-radius:9999px; transform:translateY(-50%);}
-    .fancy-hr::before{ left:-14px;} .fancy-hr::after{ right:-14px;}
+    .cert-title{ letter-spacing:.10em; color:#5a4633; } /* classy brown ink */
+    .fancy-hr{
+      position:relative; height:2px; background:#3b82f6; margin:14px 0 18px; opacity:.9;
+    }
+    .fancy-hr::before,.fancy-hr::after{
+      content:""; position:absolute; top:50%; width:8px; height:8px; border-radius:9999px;
+      background:#60a5fa; border:2px solid #2563eb; transform:translateY(-50%);
+    }
+    .fancy-hr::before{ left:-14px; } .fancy-hr::after{ right:-14px; }
 
     .medal{
-      width:88px;height:88px;border-radius:9999px;
-      background:radial-gradient(circle at 35% 35%, var(--gold1), var(--gold2) 45%, var(--gold3));
-      box-shadow: inset 0 6px 12px rgba(0,0,0,.08), 0 8px 18px rgba(0,0,0,.15);
-      display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:28px;border:4px solid #fef08a;
+      width:92px; height:92px; border-radius:9999px;
+      background:radial-gradient(circle at 35% 35%, #fff6cc, var(--gold1) 40%, var(--gold2) 70%, var(--gold3));
+      border:4px solid #fff6cc;
+      box-shadow: inset 0 8px 14px rgba(0,0,0,.10), 0 10px 22px rgba(0,0,0,.16);
+      display:flex; align-items:center; justify-content:center;
+      color:#704c00; font-weight:800; font-size:30px;
     }
 
     /* modal */
@@ -56,6 +92,7 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
+  <!-- Header -->
   <header class="bg-white/80 backdrop-blur border-b">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2">
@@ -70,13 +107,14 @@
     </div>
   </header>
 
+  <!-- Hero -->
   <section class="hero text-white border-b">
     <div class="max-w-6xl mx-auto px-4 py-12">
-      <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">🚀 Get Instant Verified Certificates</h1>
-      <p class="mt-3 opacity-95 text-sm md:text-base">Perfect for resumes & jobs • Pass a 5-question test • Auto-download a professional certificate</p>
+      <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">🏆 Premium, Recruiter-Ready Certificates</h1>
+      <p class="mt-3 opacity-95 text-sm md:text-base">Pass a 5-question test • Auto-download a professional certificate • Perfect for resumes & jobs</p>
       <div class="mt-4 flex flex-wrap gap-2 text-xs">
-        <span class="px-2 py-1 rounded-full bg-white/15 border border-white/30">Recruiter-friendly</span>
-        <span class="px-2 py-1 rounded-full bg-white/15 border border-white/30">Looks premium</span>
+        <span class="px-2 py-1 rounded-full bg-white/15 border border-white/30">Gold accent design</span>
+        <span class="px-2 py-1 rounded-full bg-white/15 border border-white/30">One-tap verification</span>
         <span class="px-2 py-1 rounded-full bg-white/15 border border-white/30">Fast & simple</span>
       </div>
     </div>
@@ -84,6 +122,7 @@
 
   <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
 
+    <!-- Skills -->
     <section id="skills" class="rounded-2xl border bg-white p-4">
       <div class="flex items-center justify-between">
         <h2 class="text-base font-semibold">Choose Your Skill</h2>
@@ -92,11 +131,12 @@
       <div id="skillsGrid" class="mt-3 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2"></div>
     </section>
 
+    <!-- Details -->
     <section id="form" class="rounded-2xl border bg-white p-4">
       <h2 class="text-base font-semibold mb-3">Your Details</h2>
       <div class="grid sm:grid-cols-3 gap-3">
         <label class="block text-sm">Full Name
-          <input id="userName" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="e.g., R S Satav">
+          <input id="userName" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="e.g., Rahul Satav">
         </label>
         <label class="block text-sm">Email (demo)
           <input id="userEmail" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="rahul@gmail.com">
@@ -113,6 +153,7 @@
       </div>
     </section>
 
+    <!-- Quiz -->
     <section id="quiz" class="hidden rounded-2xl border bg-white p-4">
       <div class="flex items-center justify-between">
         <h2 class="text-base font-semibold">Quick Test • <span id="quizSkill"></span></h2>
@@ -125,65 +166,47 @@
       </div>
     </section>
 
+    <!-- Certificate (scaled preview only) -->
     <section id="certArea" class="hidden">
       <div class="mx-auto w-full overflow-auto flex justify-center">
         <div class="origin-top scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-[0.9]">
           <div id="certCard" class="relative cert-paper cert-canvas overflow-hidden">
-            <div class="orn tl"><svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
-            <div class="orn tr"><svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
-            <div class="orn bl"><svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
-            <div class="orn br"><svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
+            <!-- Gold corner ornaments -->
+            <div class="orn tl"><svg viewBox="0 0 120 120" fill="#f1c451"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
+            <div class="orn tr"><svg viewBox="0 0 120 120" fill="#f1c451"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
+            <div class="orn bl"><svg viewBox="0 0 120 120" fill="#f1c451"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
+            <div class="orn br"><svg viewBox="0 0 120 120" fill="#f1c451"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
 
-            <div class="cert-inner rounded-[12px] flex flex-col justify-between h-full p-12">
+            <!-- Balanced layout: top content + centered footer -->
+            <div class="cert-inner rounded-[16px] flex flex-col justify-between h-full p-12">
+              <!-- Top block -->
               <div>
                 <div class="text-center">
-                    <div class="text-[58px] font-extrabold cert-title tracking-[.08em]">CERTIFICATE</div>
-                    <div class="mt-1 text-[16px] tracking-[0.25em] text-slate-600 font-semibold">OF COMPLETING A SKILL VALIDATION TEST</div>
-                    <div class="mt-6 text-[14px] tracking-wide text-slate-600">This Official Credential is Conferred Upon</div>
-                    <div id="certName" class="mt-2 text-[72px] font-extrabold text-[#3157d4] capitalize">Rahul Shahaji Satav</div>
+                  <div class="text-[58px] font-extrabold cert-title tracking-[.10em]">CERTIFICATE</div>
+                  <div class="mt-1 text-[14px] tracking-[0.32em] text-slate-600 font-semibold">OF COMPLETING A SKILL VALIDATION TEST</div>
+                  <div class="mt-6 text-[13px] tracking-wide text-slate-500">This Official Credential Is Conferred Upon</div>
+                  <div id="certName" class="mt-2 text-[72px] font-extrabold text-[#3157d4] capitalize">Candidate</div>
                 </div>
 
-                <div class="mx-[120px] mt-6"><div class="fancy-hr"></div></div>
+                <div class="mx-[140px] mt-6"><div class="fancy-hr"></div></div>
 
-                <div class="mt-4 text-center text-[18px] text-slate-700 leading-relaxed px-[120px]">
-                    Has successfully completed, mastered, and rigorously validated their advanced expertise in the
-                    <b id="certSkill">Rust</b> skill test,
-                    achieving an exceptional and commendable final score of <b id="certScore">100%</b>,
-                    thereby securing the highly-coveted <b id="certLevel">Advanced</b> level certification.
-                    <br><br>
-                    This official and independently verified credential demonstrates an unwavering mastery of
-                    mission-critical core competencies, qualifying the holder as an invaluable and accomplished professional
-                    sought after by global industry leaders and major organizations, including
-                    Google, Amazon, Microsoft, IBM, Salesforce, and Cisco.
-                </div>
-
-                <div class="mt-6 text-center text-[12px] text-slate-500">
-                    <div class="mt-4">
-                        Date: <span id="certDate">10/4/2025</span>
-                        <br>
-                        Issued by: Rahul Shahaji Satav
-                    </div>
+                <div class="mt-5 text-center text-[17px] text-slate-700 leading-relaxed px-[160px]">
+                  Has successfully completed, mastered, and rigorously validated their advanced expertise in the
+                  <b id="certSkill">Skill</b> skill test, achieving an exceptional and commendable final score of
+                  <b id="certScore">100%</b>, thereby securing the highly-coveted <b id="certLevel">Advanced</b> level certification.
                 </div>
               </div>
 
-              <div class="flex items-end justify-between mt-10">
-                <div class="flex items-end gap-4">
+              <!-- Centered footer cluster -->
+              <div class="mt-10 pb-[24px]">
+                <div class="flex flex-col items-center justify-center gap-2">
                   <div id="medal" class="medal">1</div>
-                  <div class="text-left leading-tight">
-                    <div class="text-[12px] text-slate-500">
-                      Date: <span id="certDate2">10/4/2025</span>
-                      <br>
-                      Issued by: Rahul Shahaji Satav
-                    </div>
-                  </div>
-                </div>
 
-                <div class="text-right leading-tight">
-                  <div class="flex items-center justify-end gap-2">
-                    <img src="assets/logo.svg" class="h-7 w-7" alt="logo">
-                    <div class="text-[28px] font-bold" style="background:linear-gradient(90deg,#2563eb,#06b6d4); -webkit-background-clip:text; color:transparent">SkillCert</div>
+                  <div class="mt-2 text-[12px] text-slate-500 leading-tight text-center">
+                    Issued by <b>Rahul Shahaji Satav</b> • Date: <span id="certDate"></span>
                   </div>
-                  <div class="mt-1 text-[12px] text-slate-500 leading-tight">
+
+                  <div class="text-[12px] text-slate-500 leading-tight text-center">
                     UID: <span id="certUID">—</span><br/>
                     Verify at:
                     <a id="certVerifyText"
@@ -192,11 +215,19 @@
                        target="_blank"
                        rel="noopener">https://rahul-satav.github.io/SkillCert/verify.html</a>
                   </div>
+
+                  <!-- Brand -->
+                  <div class="mt-1 flex items-center gap-2">
+                    <img src="assets/logo.svg" class="h-7 w-7" alt="logo">
+                    <div class="text-[26px] font-extrabold"
+                         style="background:linear-gradient(90deg,#1e40af,#3b82f6); -webkit-background-clip:text; color:transparent">
+                      SkillCert
+                    </div>
+                  </div>
                 </div>
               </div>
-
-            </div>
-            </div>
+            </div><!-- /inner -->
+          </div>
         </div>
       </div>
     </section>
@@ -207,6 +238,7 @@
     © <span id="year"></span> SkillCert • Recruiter-ready, professional certificates.
   </footer>
 
+  <!-- Fail Modal -->
   <div id="failModal" class="modal fixed inset-0 bg-black/50 backdrop-blur-sm items-center justify-center p-4 z-50">
     <div class="w-full max-w-sm rounded-2xl bg-white shadow-xl p-5">
       <div class="flex items-start gap-3">
@@ -218,7 +250,8 @@
       </div>
       <div class="mt-4 flex gap-2 justify-end">
         <button id="closeFail" class="px-3 py-1.5 rounded-lg border bg-white">Close</button>
-        <button id="retakeBtn" class="px-3 py-1.5 rounded-lg text-white" style="background: linear-gradient(90deg, var(--indigo), var(--cyan));">🔄 Retake quiz</button>
+        <button id="retakeBtn" class="px-3 py-1.5 rounded-lg text-white"
+                style="background: linear-gradient(90deg, var(--indigo), var(--cyan));">🔄 Retake quiz</button>
       </div>
     </div>
   </div>
@@ -250,7 +283,7 @@
     skillsGrid.appendChild(b);
   });
 
-  /* Question bank */
+  /* Question bank (short & crisp) */
   const bank = {
     "Java + Spring Boot":[
       {q:"Which annotation starts a Spring Boot app?",a:["@SpringBootApplication","@EnableAutoConfiguration","@ComponentScan","@RestController"],c:0},
@@ -382,7 +415,6 @@
     $("#certLevel").textContent = level;
     $("#medal").textContent     = medal;
     $("#certDate").textContent  = date;
-    $("#certDate2").textContent = date; // For the duplicate date field
 
     // Create UID + payload
     const uid = makeUID(8);
@@ -391,13 +423,9 @@
     const shortVerifyText = `${baseURL()}verify.html`;
 
     $("#certUID").textContent = uid;
-    // show short text, keep full encoded link in href
     const a = document.getElementById('certVerifyText');
-    a.textContent = shortVerifyText;
-    a.href = fullVerifyLink;
-
-    // (optional) expose globally
-    window.__lastVerifyLink = fullVerifyLink;
+    a.textContent = shortVerifyText; // clean text
+    a.href = fullVerifyLink;         // but clickable opens full encoded link
 
     $("#certArea").classList.remove('hidden');
   }
@@ -423,7 +451,7 @@
       pdf.addImage(dataUrl,'PNG',(pageW-w)/2,(pageH-h)/2,w,h);
       pdf.save('SkillCert_Certificate.pdf');
       window.scrollTo({top:0,behavior:'smooth'});
-      toast("🎉 Certificate downloaded! UID & clean verify line added.");
+      toast("🎉 Certificate downloaded! Gold + blue design applied.");
     }catch(e){
       console.error(e);
       toast("PDF export failed. Refresh and try again.");
@@ -435,7 +463,7 @@
     const el=document.createElement('div');
     el.textContent=msg;
     el.className="fixed left-1/2 -translate-x-1/2 bottom-6 px-4 py-2 rounded-xl text-white text-sm shadow-lg z-50";
-    el.style.background="linear-gradient(90deg, var(--indigo), var(--cyan), var(--emerald))";
+    el.style.background="linear-gradient(90deg, #1e40af, #3b82f6, #06b6d4)";
     document.body.appendChild(el);
     setTimeout(()=>{ el.style.opacity='.0'; el.style.transition='opacity .5s'; setTimeout(()=>el.remove(),500); },2200);
   }
