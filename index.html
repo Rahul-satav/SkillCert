@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <style>
     :root { --brand:#7c3aed; --brand2:#06b6d4; --brand3:#f59e0b; }
     body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
@@ -26,6 +25,7 @@
   </style>
 </head>
 <body class="hero min-h-screen bg-gradient-to-br from-white to-slate-50 text-slate-800">
+  <!-- Topbar -->
   <header class="sticky top-0 z-30 border-b bg-white/70 glass">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -39,6 +39,8 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-6 space-y-8">
+
+    <!-- Intro -->
     <section class="rounded-2xl border p-5 bg-white/80">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
@@ -53,7 +55,7 @@
       </div>
     </section>
 
-    <!-- Owner Settings -->
+    <!-- Owner settings -->
     <section class="rounded-2xl border p-4">
       <h2 class="text-base font-semibold mb-2">Owner Settings</h2>
       <div class="grid sm:grid-cols-3 gap-3 text-sm">
@@ -79,7 +81,7 @@
       <div id="skillsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2"></div>
     </section>
 
-    <!-- Login & Input -->
+    <!-- Login -->
     <section class="rounded-2xl border p-4">
       <h2 class="text-base font-semibold mb-3">Login & Start</h2>
       <div class="grid sm:grid-cols-2 gap-3">
@@ -165,16 +167,18 @@
       <div id="postActions" class="mt-2 hidden flex items-center gap-2">
         <button id="copyPathBtn" class="btn px-3 py-1.5 rounded-lg bg-white border">📋 Copy Upload Path</button>
         <a id="openGithubBtn" target="_blank" class="btn px-3 py-1.5 rounded-lg bg-white border underline">Open GitHub Upload</a>
-        <button id="shareLinkedInBtn" class="btn px-3 py-1.5 rounded-lg text-white" style="background: #0a66c2;">Share on LinkedIn</button>
+        <button id="shareLinkedInBtn" class="btn px-3 py-1.5 rounded-lg text-white" style="background:#0a66c2;">Share on LinkedIn</button>
       </div>
+
       <div class="mt-3 overflow-auto">
         <div id="certCard" class="relative mx-auto aspect-[1.414/1] w-full max-w-[1100px] rounded-2xl bg-white shadow border frame">
-          <!-- bg -->
+          <!-- background -->
           <svg class="absolute inset-0 h-full w-full rounded-2xl" viewBox="0 0 1600 1131" preserveAspectRatio="none">
-            <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0%" stop-color="#f8fafc" /><stop offset="100%" stop-color="#eef2ff" /></linearGradient></defs>
+            <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0%" stop-color="#f8fafc"/><stop offset="100%" stop-color="#eef2ff"/></linearGradient></defs>
             <rect x="0" y="0" width="1600" height="1131" fill="url(#g1)"></rect>
             <g opacity="0.20"><circle cx="1380" cy="160" r="120" fill="#dbeafe"></circle><circle cx="220" cy="980" r="140" fill="#e2e8f0"></circle></g>
           </svg>
+
           <!-- content -->
           <div class="relative z-10 h-full p-10 md:p-14 flex flex-col">
             <div class="flex items-start justify-between gap-4">
@@ -217,6 +221,7 @@
               </div>
             </div>
           </div>
+
           <div class="pointer-events-none absolute inset-6 rounded-2xl border-2 border-slate-300"></div>
         </div>
       </div>
@@ -227,75 +232,220 @@
     © <span id="year"></span> SkillCert • Add this certificate to your résumé & LinkedIn — it includes a verification QR and UID to boost recruiter trust.
   </footer>
 
+<!-- ==================== APP SCRIPT (with fixes) ==================== -->
 <script>
-// Popular skills
-const popularSkills = ["Java + Spring Boot","Angular","React","Node.js","Python","Django","Machine Learning","Data Analysis","AWS","Azure","GCP","DevOps","Docker","Kubernetes","SQL","NoSQL","Cybersecurity","Ethical Hacking","UI/UX Design","HTML & CSS","JavaScript","TypeScript","Flutter","React Native","C++","C#",".NET","Power BI","Tableau","Salesforce","QA Automation","Selenium","SAP","Blockchain","Generative AI"];
-const questionBank = {"Java + Spring Boot":[{q:"Which annotation starts a Spring Boot application?",a:["@SpringBootApplication","@EnableAutoConfiguration","@ComponentScan","@RestController"],c:0},{q:"Default embedded server in Spring Boot is…",a:["Tomcat","Jetty","Undertow","Netty"],c:0},{q:"Which file holds app config?",a:["application.properties","pom.xml","settings.gradle","bootstrap.yml"],c:0},{q:"JPA stands for…",a:["Java Persistence API","Java Package API","Java Processing API","JSON Persistence API"],c:0},{q:"Which annotation maps HTTP GET?",a:["@GetMapping","@PostMapping","@RequestBody","@PathVariable"],c:0}],"React":[{q:"State update is…",a:["Asynchronous","Synchronous","Blocking","None"],c:0},{q:"Keys in lists should be…",a:["Stable & unique","Random each render","Array index always","Same for all"],c:0},{q:"Hook for side effects?",a:["useEffect","useState","useMemo","useRef"],c:0},{q:"JSX compiles to…",a:["React.createElement calls","HTML strings","DOM nodes","CSS rules"],c:0},{q:"To lift state up you…",a:["Move state to common parent","Use refs","Global variable","Context only"],c:0}]};
+/* ---------- helpers ---------- */
 function uid(){ return Math.random().toString(36).slice(2,10).toUpperCase(); }
+function $(s){ return document.querySelector(s); }
 
-// Skills grid
-const grid=document.getElementById('skillsGrid');
-popularSkills.forEach(s=>{const b=document.createElement('button');b.textContent=s;b.className="px-3 py-2 rounded-lg border hover:bg-slate-100 text-sm";b.onclick=()=>{document.getElementById('skillName').value=s;window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});};grid.appendChild(b);});
+/* ensure the QR library is loaded (fallback to unpkg if first CDN fails) */
+function ensureQrLib(){
+  return new Promise(resolve=>{
+    if (window.QRCode) return resolve();
+    const s1 = document.createElement('script');
+    s1.src = "https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js";
+    s1.onload = () => resolve();
+    s1.onerror = () => {
+      const s2 = document.createElement('script');
+      s2.src = "https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js";
+      s2.onload = () => resolve();
+      s2.onerror = () => { console.error('QR library failed to load'); resolve(); };
+      document.head.appendChild(s2);
+    };
+    document.head.appendChild(s1);
+  });
+}
 
-// Quiz
-const startBtn=document.getElementById('startQuizBtn');const quizSection=document.getElementById('quizSection');const quizSkillSpan=document.getElementById('quizSkill');const quizContainer=document.getElementById('quizContainer');let currentQuestions=[];let score=0;
-startBtn.onclick=()=>{const name=document.getElementById('userName').value.trim();const email=document.getElementById('userEmail').value.trim();const skill=document.getElementById('skillName').value.trim();if(!name||!email||!skill){alert("Please enter name, email and skill.");return;}const bank=questionBank[skill]||[{q:`${skill}: Which statement is true?`,a:["It improves with practice","It cannot be measured","Only theory matters","None"],c:0},{q:"A strong project portfolio shows…",a:["Applied skill","Only certificates","Only grades","Only theory"],c:0},{q:"Version control commonly used is…",a:["Git","SVN only","Zip files","Email"],c:0},{q:"Writing tests helps…",a:["Quality & confidence","Slow everything","Costs only","Nothing"],c:0},{q:"Documentation should be…",a:["Clear & updated","Skipped","Private only","In screenshots"],c:0}];currentQuestions=bank.slice(0,5);quizContainer.innerHTML="";currentQuestions.forEach((item,idx)=>{const div=document.createElement('div');div.className="rounded-xl border p-3 bg-white/80";div.innerHTML=`<p class="font-medium">${idx+1}. ${item.q}</p><div class="mt-2 grid sm:grid-cols-2 gap-2">${item.a.map((opt,i)=>`<label class="inline-flex items-center gap-2 text-sm"><input type="radio" name="q${idx}" value="${i}"><span>${opt}</span></label>`).join('')}</div>`;quizContainer.appendChild(div);});document.getElementById('quizResult').textContent="";quizSkillSpan.textContent=skill;quizSection.classList.remove('hidden');document.getElementById('paymentSection').classList.add('hidden');document.getElementById('certSection').classList.add('hidden');};
-document.getElementById('submitQuizBtn').onclick=()=>{score=0;currentQuestions.forEach((q,idx)=>{const chosen=document.querySelector(`input[name="q${idx}"]:checked`);if(chosen&&Number(chosen.value)===q.c)score++;});const pct=Math.round((score/5)*100);const res=document.getElementById('quizResult');res.textContent=`Score: ${score}/5 (${pct}%)`;res.className="text-sm font-medium "+(pct>=80?"text-emerald-600":"text-rose-600");if(pct>=80){setupPayment();}};
+/* wait for all images inside a node to load (logo + QR) */
+async function waitForImages(node){
+  const imgs = node.querySelectorAll('img');
+  await Promise.all([...imgs].map(img=>{
+    if (img.complete && img.naturalWidth>0) return;
+    return new Promise(res=>{ img.onload=res; img.onerror=res; });
+  }));
+}
 
-// Payment
-function upiUrl(upiId,payeeName,amount,note){const params=new URLSearchParams({pa:upiId,pn:payeeName,am:String(amount),cu:"INR",tn:note});return "upi://pay?"+params.toString();}
-function setupPayment(){document.getElementById('paymentSection').classList.remove('hidden');renderUpiQr();}
-function renderUpiQr(){const upiId=document.getElementById('upiId').value.trim();const pn=document.getElementById('payeeName').value.trim()||"SkillCert";const amount=Number(document.getElementById('feeAmount').value);const name=document.getElementById('userName').value.trim();const skill=document.getElementById('skillName').value.trim();const note=`Cert fee ${amount} — ${name} (${skill})`;const url=upiUrl(upiId,pn,amount,note);const canvas=document.getElementById('upiQr');const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);QRCode.toCanvas(canvas,url,{width:180,margin:1},(e)=>{if(e)console.error(e);} );document.getElementById('upiText').textContent=`${upiId} • ₹${amount}`;}
-document.getElementById('feeAmount').addEventListener('change',renderUpiQr);document.getElementById('upiId').addEventListener('change',renderUpiQr);document.getElementById('payeeName').addEventListener('change',renderUpiQr);document.getElementById('confirmPaid').addEventListener('change',()=>{document.getElementById('unlockBtn').disabled=!document.getElementById('confirmPaid').checked;});
-document.getElementById('unlockBtn').onclick=()=>{document.getElementById('certSection').classList.remove('hidden');buildCertificate();window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});};
+/* ---------- skills & quiz ---------- */
+const popularSkills=["Java + Spring Boot","Angular","React","Node.js","Python","Django","Machine Learning","Data Analysis","AWS","Azure","GCP","DevOps","Docker","Kubernetes","SQL","NoSQL","Cybersecurity","Ethical Hacking","UI/UX Design","HTML & CSS","JavaScript","TypeScript","Flutter","React Native","C++","C#",".NET","Power BI","Tableau","Salesforce","QA Automation","Selenium","SAP","Blockchain","Generative AI"];
+const questionBank={"Java + Spring Boot":[{q:"Which annotation starts a Spring Boot application?",a:["@SpringBootApplication","@EnableAutoConfiguration","@ComponentScan","@RestController"],c:0},{q:"Default embedded server in Spring Boot is…",a:["Tomcat","Jetty","Undertow","Netty"],c:0},{q:"Which file holds app config?",a:["application.properties","pom.xml","settings.gradle","bootstrap.yml"],c:0},{q:"JPA stands for…",a:["Java Persistence API","Java Package API","Java Processing API","JSON Persistence API"],c:0},{q:"Which annotation maps HTTP GET?",a:["@GetMapping","@PostMapping","@RequestBody","@PathVariable"],c:0}],"React":[{q:"State update is…",a:["Asynchronous","Synchronous","Blocking","None"],c:0},{q:"Keys in lists should be…",a:["Stable & unique","Random each render","Array index always","Same for all"],c:0},{q:"Hook for side effects?",a:["useEffect","useState","useMemo","useRef"],c:0},{q:"JSX compiles to…",a:["React.createElement calls","HTML strings","DOM nodes","CSS rules"],c:0},{q:"To lift state up you…",a:["Move state to common parent","Use refs","Global variable","Context only"],c:0}]};
 
-// Certificate + JSON + actions
+const grid=$("#skillsGrid");
+popularSkills.forEach(s=>{
+  const b=document.createElement('button');
+  b.textContent=s; b.className="px-3 py-2 rounded-lg border hover:bg-slate-100 text-sm";
+  b.onclick=()=>{ $("#skillName").value=s; window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}); };
+  grid.appendChild(b);
+});
+
+let currentQuestions=[], score=0;
+$("#startQuizBtn").onclick=()=>{
+  const name=$("#userName").value.trim(), email=$("#userEmail").value.trim(), skill=$("#skillName").value.trim();
+  if(!name||!email||!skill){ alert("Please enter name, email and skill."); return; }
+  const bank=questionBank[skill]||[
+    {q:`${skill}: Which statement is true?`,a:["It improves with practice","It cannot be measured","Only theory matters","None"],c:0},
+    {q:"A strong project portfolio shows…",a:["Applied skill","Only certificates","Only grades","Only theory"],c:0},
+    {q:"Version control commonly used is…",a:["Git","SVN only","Zip files","Email"],c:0},
+    {q:"Writing tests helps…",a:["Quality & confidence","Slow everything","Costs only","Nothing"],c:0},
+    {q:"Documentation should be…",a:["Clear & updated","Skipped","Private only","In screenshots"],c:0},
+  ];
+  currentQuestions=bank.slice(0,5);
+  $("#quizContainer").innerHTML="";
+  currentQuestions.forEach((item,idx)=>{
+    const div=document.createElement('div');
+    div.className="rounded-xl border p-3 bg-white/80";
+    div.innerHTML=`<p class="font-medium">${idx+1}. ${item.q}</p>
+      <div class="mt-2 grid sm:grid-cols-2 gap-2">
+        ${item.a.map((opt,i)=>`<label class="inline-flex items-center gap-2 text-sm">
+          <input type="radio" name="q${idx}" value="${i}"><span>${opt}</span></label>`).join('')}
+      </div>`;
+    $("#quizContainer").appendChild(div);
+  });
+  $("#quizSkill").textContent=skill;
+  $("#quizSection").classList.remove('hidden');
+  $("#paymentSection").classList.add('hidden');
+  $("#certSection").classList.add('hidden');
+  $("#quizResult").textContent="";
+};
+
+$("#submitQuizBtn").onclick=()=>{
+  score=0;
+  currentQuestions.forEach((q,idx)=>{
+    const chosen=document.querySelector(`input[name="q${idx}"]:checked`);
+    if(chosen && Number(chosen.value)===q.c) score++;
+  });
+  const pct=Math.round((score/5)*100);
+  const res=$("#quizResult");
+  res.textContent=`Score: ${score}/5 (${pct}%)`;
+  res.className="text-sm font-medium "+(pct>=80?"text-emerald-600":"text-rose-600");
+  if(pct>=80) setupPayment();
+};
+
+/* ---------- payment & QR ---------- */
+function upiUrl(upiId,payeeName,amount,note){
+  const params=new URLSearchParams({pa:upiId,pn:payeeName,am:String(amount),cu:"INR",tn:note});
+  return "upi://pay?"+params.toString();
+}
+async function setupPayment(){
+  $("#paymentSection").classList.remove('hidden');
+  await renderUpiQr();
+}
+async function renderUpiQr(){
+  await ensureQrLib();
+  const upiId=$("#upiId").value.trim();
+  const pn=$("#payeeName").value.trim()||"SkillCert";
+  const amount=Number($("#feeAmount").value);
+  const name=$("#userName").value.trim();
+  const skill=$("#skillName").value.trim();
+  const note=`Cert fee ${amount} — ${name} (${skill})`;
+  const url=upiUrl(upiId,pn,amount,note);
+  const canvas=$("#upiQr");
+  if (!window.QRCode){ $("#upiText").textContent="(QR library blocked – try refresh)"; return; }
+  QRCode.toCanvas(canvas,url,{width:180,margin:1},(e)=>{ if(e) console.error(e); });
+  $("#upiText").textContent=`${upiId} • ₹${amount}`;
+}
+$("#feeAmount").addEventListener('change',renderUpiQr);
+$("#upiId").addEventListener('change',renderUpiQr);
+$("#payeeName").addEventListener('change',renderUpiQr);
+$("#confirmPaid").addEventListener('change',()=>{ $("#unlockBtn").disabled=!$("#confirmPaid").checked; });
+$("#unlockBtn").onclick=()=>{ $("#certSection").classList.remove('hidden'); buildCertificate(); window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}); };
+
+/* ---------- certificate & verify QR ---------- */
 let lastUID=null, lastVerifyUrl=null, lastSkill=null;
 async function buildCertificate(){
-  const name=document.getElementById('userName').value.trim();
-  const email=document.getElementById('userEmail').value.trim();
-  const skill=document.getElementById('skillName').value.trim();
-  const level=document.getElementById('skillLevel').value;
-  const siteBase=document.getElementById('siteBase').value.trim().replace(/\s+$/,'');
+  await ensureQrLib();
+  const name=$("#userName").value.trim();
+  const email=$("#userEmail").value.trim();
+  const skill=$("#skillName").value.trim();
+  const level=$("#skillLevel").value;
+  const siteBase=$("#siteBase").value.trim().replace(/\s+$/,'');
   const id=uid();
   const verifyUrl=(siteBase||"./")+"verify.html?uid="+id;
   const date=new Date().toISOString().slice(0,10);
 
-  document.getElementById('certLevel').textContent=level;
-  document.getElementById('certName').textContent=name;
-  document.getElementById('certSkill').textContent=skill;
-  document.getElementById('payeeNameSpan').textContent=document.getElementById('payeeName').value.trim()||"SkillCert";
-  document.getElementById('certDate').textContent=new Date(date).toLocaleDateString();
-  document.getElementById('certUid').textContent=id;
+  $("#certLevel").textContent=level;
+  $("#certName").textContent=name;
+  $("#certSkill").textContent=skill;
+  $("#payeeNameSpan").textContent=$("#payeeName").value.trim()||"SkillCert";
+  $("#certDate").textContent=new Date(date).toLocaleDateString();
+  $("#certUid").textContent=id;
 
-  const qrData=await QRCode.toDataURL(verifyUrl,{width:256,margin:1});
-  await new Promise((res,rej)=>{const img=document.getElementById('verifyQr');img.onload=()=>res();img.onerror=rej;img.src=qrData;});
+  // QR image (with canvas fallback)
+  try{
+    if (!window.QRCode) throw new Error("QR lib missing");
+    const qrData = await QRCode.toDataURL(verifyUrl,{width:256,margin:1});
+    const img = $("#verifyQr");
+    await new Promise((res,rej)=>{ img.onload=()=>res(); img.onerror=rej; img.src=qrData; });
+  }catch(e){
+    console.warn("Falling back to canvas QR", e);
+    const holder = $("#verifyQr").parentElement;
+    const cv = document.createElement('canvas');
+    cv.width = 256; cv.height=256; cv.id = 'verifyQrCanvas';
+    holder.innerHTML=""; holder.appendChild(cv);
+    if (window.QRCode) QRCode.toCanvas(cv, verifyUrl, {width:128, margin:1}, ()=>{});
+  }
 
-  const record={uid:id,name,skill,level,email,date,issuer:document.getElementById('payeeName').value.trim()||"SkillCert",verify_url:verifyUrl,status:"valid"};
-  const list=JSON.parse(localStorage.getItem('skillcert_issued')||"[]");list.unshift(record);localStorage.setItem('skillcert_issued',JSON.stringify(list));
+  // Record -> localStorage
+  const record={uid:id,name,skill,level,email,date,issuer:$("#payeeName").value.trim()||"SkillCert",verify_url:verifyUrl,status:"valid"};
+  const list=JSON.parse(localStorage.getItem('skillcert_issued')||"[]"); list.unshift(record);
+  localStorage.setItem('skillcert_issued',JSON.stringify(list));
 
+  // Download JSON for /data upload
   const blob=new Blob([JSON.stringify(record,null,2)],{type:"application/json"});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=id+".json";a.click();
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=id+".json"; a.click();
 
-  const hint=document.getElementById('uploadHint');
-  hint.classList.remove('hidden');
-  hint.innerHTML = "⬆️ Upload the downloaded file to your GitHub repo at <code>data/"+id+".json</code> to make the link permanent.";
+  // Post actions
+  const idPath = "data/"+id+".json";
+  const hint=$("#uploadHint"); hint.classList.remove('hidden');
+  hint.innerHTML = "⬆️ Upload the downloaded file to your GitHub repo at <code>"+idPath+"</code> to make the link permanent.";
+  $("#postActions").classList.remove('hidden');
+  $("#copyPathBtn").onclick=async()=>{ await navigator.clipboard.writeText(idPath); $("#copyPathBtn").textContent="✅ Copied path"; setTimeout(()=>$("#copyPathBtn").textContent="📋 Copy Upload Path",1500); };
+  $("#openGithubBtn").href = "https://github.com/Rahul-satav/SkillCert/new/main?filename="+encodeURIComponent(idPath);
 
-  const actions=document.getElementById('postActions');
-  actions.classList.remove('hidden');
-  const copyBtn=document.getElementById('copyPathBtn');
-  const openBtn=document.getElementById('openGithubBtn');
-  const shareBtn=document.getElementById('shareLinkedInBtn');
-  copyBtn.onclick=async()=>{await navigator.clipboard.writeText("data/"+id+".json");copyBtn.textContent="✅ Copied path";setTimeout(()=>copyBtn.textContent="📋 Copy Upload Path",1500);};
-  openBtn.href = "https://github.com/Rahul-satav/SkillCert/new/main?filename=data/"+id+".json";
-
+  // LinkedIn share
   lastUID=id; lastVerifyUrl=verifyUrl; lastSkill=skill;
-  shareBtn.onclick=()=>{const hashtags = ["SkillCert","Certification","TechJobs","RahulSatav", skill.replace(/[^a-z0-9]/gi,'')].map(t=>"#"+t.replace(/^#+/,'').replace(/\s+/g,''));const message = `🏅 I just earned my verified SkillCert certificate in ${skill}!\nProud to showcase my SkillCert credential by Rahul Satav 🚀\n\n✅ Verify my certificate here: ${verifyUrl}\n\n${hashtags.join(' ')}`;navigator.clipboard.writeText(message).catch(()=>{});const shareUrl = "https://www.linkedin.com/sharing/share-offsite/?url="+encodeURIComponent(verifyUrl);window.open(shareUrl, "_blank");};
+  $("#shareLinkedInBtn").onclick=()=>{
+    const hashtags=["SkillCert","Certification","TechJobs","RahulSatav", skill.replace(/[^a-z0-9]/gi,'')].map(t=>"#"+t.replace(/^#+/,'').replace(/\s+/g,''));
+    const msg=`🏅 I just earned my verified SkillCert certificate in ${skill}!\nProud to showcase my SkillCert credential by Rahul Satav 🚀\n\n✅ Verify my certificate here: ${verifyUrl}\n\n${hashtags.join(' ')}`;
+    navigator.clipboard.writeText(msg).catch(()=>{});
+    window.open("https://www.linkedin.com/sharing/share-offsite/?url="+encodeURIComponent(verifyUrl), "_blank");
+  };
 }
 
-document.getElementById('pngBtn').onclick=async()=>{const node=document.getElementById('certCard');const dataUrl=await htmlToImage.toPng(node,{pixelRatio:2});const a=document.createElement('a');a.href=dataUrl;a.download=`${document.getElementById('certName').textContent.replace(/\s+/g,'_')}_${document.getElementById('certSkill').textContent.replace(/\s+/g,'_')}_certificate.png`;a.click();};
-document.getElementById('pdfBtn').onclick=async()=>{const node=document.getElementById('certCard');const dataUrl=await htmlToImage.toPng(node,{pixelRatio:2});const { jsPDF } = window.jspdf;const pdf=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});const pageWidth=pdf.internal.pageSize.getWidth();const pageHeight=pdf.internal.pageSize.getHeight();const img=new Image();img.src=dataUrl;img.onload=()=>{const ratio=Math.min(pageWidth/img.width,pageHeight/img.height);const w=img.width*ratio,h=img.height*ratio;const x=(pageWidth-w)/2,y=(pageHeight-h)/2;pdf.addImage(dataUrl,'PNG',x,y,w,h);pdf.save('certificate.pdf');};};
+/* ---------- downloads (PNG / PDF) ---------- */
+document.getElementById('pngBtn').onclick=async()=>{
+  const node = document.getElementById('certCard');
+  await waitForImages(node);
+  try{
+    const dataUrl = await htmlToImage.toPng(node,{pixelRatio:2, cacheBust:true, useCORS:true});
+    const a=document.createElement('a');
+    a.href=dataUrl;
+    const n = $("#certName").textContent.replace(/\s+/g,'_');
+    const s = $("#certSkill").textContent.replace(/\s+/g,'_');
+    a.download=`${n}_${s}_certificate.png`;
+    a.click();
+  }catch(e){
+    alert("PNG export failed. Try again after a refresh."); console.error(e);
+  }
+};
+document.getElementById('pdfBtn').onclick=async()=>{
+  const node = document.getElementById('certCard');
+  await waitForImages(node);
+  try{
+    const dataUrl = await htmlToImage.toPng(node,{pixelRatio:2, cacheBust:true, useCORS:true});
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
+    const pageWidth=pdf.internal.pageSize.getWidth(), pageHeight=pdf.internal.pageSize.getHeight();
+    const img=new Image(); img.src=dataUrl;
+    img.onload=()=>{ const ratio=Math.min(pageWidth/img.width,pageHeight/img.height);
+      const w=img.width*ratio, h=img.height*ratio, x=(pageWidth-w)/2, y=(pageHeight-h)/2;
+      pdf.addImage(dataUrl,'PNG',x,y,w,h); pdf.save('certificate.pdf');
+    };
+  }catch(e){
+    alert("PDF export failed. Try again after a refresh."); console.error(e);
+  }
+};
 
+/* footer */
 document.getElementById('year').textContent=new Date().getFullYear();
 </script>
 </body>
