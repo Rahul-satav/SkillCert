@@ -1,254 +1,380 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>SkillCert — Instant Certificates</title>
-  <meta name="description" content="Create verifiable skill certificates in minutes. 5-question quiz, UPI payment, PDF download, and verification page for recruiters." />
-  <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+  <meta name="description" content="Get a professional, recruiter-ready certificate by passing a quick 5-question skill test. Perfect for resume and jobs."/>
+  <link rel="icon" href="assets/logo.svg"/>
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 
-  <!-- QR / PDF / HTML2IMG -->
+  <!-- Export libs -->
   <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
   <style>
-    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-    .ownerField[readonly] { background-color: #f1f5f9; cursor: not-allowed; }
-    #certCard {
-      background: linear-gradient(145deg, #f8fafc 0%, #e8edf3 100%);
+    :root { --a:#6366f1; --b:#06b6d4; --c:#10b981; --d:#f59e0b; }
+    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#f6f9fc; }
+    .hero {
+      background:
+        radial-gradient(900px 380px at 10% -20%, rgba(99,102,241,.28), transparent 60%),
+        radial-gradient(1100px 460px at 100% -10%, rgba(6,182,212,.28), transparent 60%),
+        linear-gradient(135deg, #4f46e5, #06b6d4 60%, #14b8a6);
+    }
+    .card { transition: transform .15s ease, box-shadow .2s ease; }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 25px 40px rgba(2,6,23,.10); }
+    /* Certificate */
+    .cert-gradient {
+      background:
+        radial-gradient(1200px 600px at -10% -10%, rgba(99,102,241,.25), transparent 60%),
+        radial-gradient(1000px 600px at 110% -20%, rgba(6,182,212,.25), transparent 60%),
+        linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+    }
+    .frame { box-shadow: inset 0 0 0 2px rgba(15,23,42,.08), inset 0 0 0 14px rgba(148,163,184,.12); }
+    .seal {
+      background: conic-gradient(from 0deg, #fde68a, #fbbf24, #f59e0b, #fbbf24, #fde68a);
     }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-<!-- Header -->
-<header class="bg-white shadow-sm">
-  <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-    <div class="flex items-center space-x-2">
-      <img src="assets/logo.svg" class="w-6 h-6" alt="Logo">
-      <span class="font-semibold text-lg">SkillCert — Instant Certificates</span>
+  <!-- Header -->
+  <header class="bg-white/80 backdrop-blur border-b">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <img src="assets/logo.svg" class="h-6 w-6" alt="logo">
+        <span class="font-semibold">SkillCert — Instant Certificates</span>
+      </div>
+      <nav class="text-sm text-slate-600 flex gap-4">
+        <a href="#skills" class="hover:text-indigo-600">Skills</a>
+        <a href="#form" class="hover:text-indigo-600">Details</a>
+        <a href="#quiz" class="hover:text-indigo-600">Quiz</a>
+      </nav>
     </div>
-    <nav class="text-sm text-slate-600 space-x-3">
-      <a href="#" class="hover:text-indigo-600">All-in-one</a>
-      <a href="#quiz" class="hover:text-indigo-600">Quiz</a>
-      <a href="#payment" class="hover:text-indigo-600">UPI QR</a>
-      <a href="#certsection" class="hover:text-indigo-600">PDF</a>
-    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero text-white border-b">
+    <div class="max-w-6xl mx-auto px-4 py-12">
+      <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">🚀 Get Instant Verified Certificates</h1>
+      <p class="mt-3 opacity-95 text-sm md:text-base">Perfect for resumes & jobs • Pass a 5-question test • Auto-download a professional certificate</p>
+      <div class="mt-4 flex flex-wrap gap-2 text-xs">
+        <span class="px-2 py-1 rounded-full bg-white/15 border border-white/30">Recruiter-friendly</span>
+        <span class="px-2 py-1 rounded-full bg-white/15 border border-white/30">Looks premium</span>
+        <span class="px-2 py-1 rounded-full bg-white/15 border border-white/30">Fast & simple</span>
+      </div>
+    </div>
+  </section>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+
+    <!-- Skills -->
+    <section id="skills" class="rounded-2xl border bg-white p-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-semibold">Choose Your Skill</h2>
+        <p class="text-xs text-slate-500">50+ options • or type your own below</p>
+      </div>
+      <div id="skillsGrid" class="mt-3 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2"></div>
+    </section>
+
+    <!-- Details Form -->
+    <section id="form" class="rounded-2xl border bg-white p-4">
+      <h2 class="text-base font-semibold mb-3">Your Details</h2>
+      <div class="grid sm:grid-cols-3 gap-3">
+        <label class="block text-sm">Full Name
+          <input id="userName" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="e.g., Rahul Satav">
+        </label>
+        <label class="block text-sm">Email (demo)
+          <input id="userEmail" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="rahul@gmail.com">
+        </label>
+        <label class="block text-sm">Selected Skill (editable)
+          <input id="skillName" class="mt-1 w-full rounded-lg border px-3 py-2" placeholder="e.g., React">
+        </label>
+      </div>
+      <div class="mt-3">
+        <button id="startQuizBtn" class="px-4 py-2 rounded-xl text-white bg-gradient-to-r from-[var(--a)] via-[var(--b)] to-[var(--c)] shadow">
+          Start 5-Question Quiz
+        </button>
+        <span class="text-xs text-slate-500 ml-2">Email must be <b>rahul@gmail.com</b> (demo).</span>
+      </div>
+    </section>
+
+    <!-- Quiz -->
+    <section id="quiz" class="hidden rounded-2xl border bg-white p-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-semibold">Quick Test • <span id="quizSkill"></span></h2>
+        <p class="text-xs text-slate-500">Score ≥ <b>80%</b> to earn a certificate</p>
+      </div>
+      <div id="quizContainer" class="mt-3 space-y-4"></div>
+      <div class="mt-4 flex items-center gap-3">
+        <button id="submitQuizBtn" class="px-4 py-2 rounded-xl bg-slate-900 text-white">Submit Quiz</button>
+        <p id="quizResult" class="text-sm font-medium"></p>
+      </div>
+    </section>
+
+    <!-- Hidden Certificate (rendered then exported) -->
+    <section id="certArea" class="hidden">
+      <div id="certCard" class="relative mx-auto aspect-[1.414/1] w-full max-w-[1100px] rounded-2xl cert-gradient border frame shadow-xl overflow-hidden">
+        <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(1000px 400px at 20% 0,#a78bfa 0,transparent 60%), radial-gradient(1000px 400px at 90% 0,#22d3ee 0,transparent 60%);"></div>
+        <div class="relative z-10 h-full p-10 md:p-14 flex flex-col">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <img src="assets/logo.svg" class="h-11 w-11" alt="logo"/>
+              <div class="leading-tight">
+                <div class="text-[11px] tracking-[0.35em] text-slate-500 font-semibold">SKILLCERT</div>
+                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Certificate of Achievement</h2>
+              </div>
+            </div>
+            <div class="seal rounded-full w-16 h-16 border-4 border-amber-300 shadow-inner"></div>
+          </div>
+
+          <div class="mt-8 text-slate-800">
+            <p class="text-sm">This certifies that</p>
+            <p class="mt-1 text-4xl md:text-6xl font-extrabold tracking-tight capitalize" id="certName">Candidate</p>
+            <p class="mt-4 text-sm">has demonstrated skill in</p>
+            <p class="mt-1 text-3xl md:text-4xl font-bold" id="certSkill">Skill</p>
+            <p class="mt-4 max-w-3xl text-sm leading-relaxed text-slate-600">
+              For demonstrating practical expertise via a proctored 5-question assessment and meeting the passing criteria.
+            </p>
+          </div>
+
+          <div class="mt-auto grid grid-cols-2 gap-6 pt-10">
+            <div class="space-y-1">
+              <div class="h-9 w-40 border-b border-slate-400"></div>
+              <p class="text-sm font-medium">Issued by Rahul Shahaji Satav</p>
+              <p class="text-xs text-slate-500">Date: <span id="certDate"></span></p>
+            </div>
+            <div class="flex items-end justify-end">
+              <div class="text-right">
+                <p class="text-[11px] text-slate-500">Add this certificate to your resume and LinkedIn — great for job calls.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pointer-events-none absolute inset-6 rounded-2xl border-2 border-slate-300"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="py-8 text-center text-xs text-slate-500">
+    © <span id="year"></span> SkillCert • Recruiter-ready, professional certificates.
+  </footer>
+
+  <!-- Modern Fail Modal -->
+  <div id="failModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="w-full max-w-sm rounded-2xl bg-white shadow-xl p-5">
+      <div class="flex items-start gap-3">
+        <div class="mt-1 shrink-0 w-10 h-10 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-lg">✖</div>
+        <div>
+          <h3 class="text-base font-semibold">You didn’t pass this time</h3>
+          <p class="text-sm text-slate-600 mt-1">You need at least <b>80%</b>. Review and try again — you’ve got this!</p>
+        </div>
+      </div>
+      <div class="mt-4 flex gap-2 justify-end">
+        <button id="closeFail" class="px-3 py-1.5 rounded-lg border bg-white">Close</button>
+        <button id="retakeBtn" class="px-3 py-1.5 rounded-lg text-white" style="background: linear-gradient(90deg, var(--a), var(--b));">🔄 Retake quiz</button>
+      </div>
+    </div>
   </div>
-</header>
 
-<!-- Hero Section -->
-<section class="text-center py-10 bg-gradient-to-r from-indigo-500 to-sky-500 text-white">
-  <h1 class="text-3xl font-bold mb-2">Create & Verify Skill Certificates</h1>
-  <p class="text-sm opacity-90">5-question assessment • Pay via UPI • Download PDF/PNG • QR verification page for recruiters</p>
-</section>
-
-<!-- Main Content -->
-<main class="max-w-5xl mx-auto px-4 py-8 space-y-8">
-
-  <!-- Owner Settings -->
-  <section class="rounded-2xl border p-4 bg-white shadow-sm">
-    <div class="flex items-center justify-between mb-2">
-      <h2 class="text-base font-semibold">Owner Settings</h2>
-      <button id="unlockOwnerBtn"
-        class="text-xs px-2 py-1 rounded-lg border bg-white hover:bg-slate-50">
-        🔒 Admin unlock
-      </button>
-    </div>
-
-    <div class="grid sm:grid-cols-3 gap-3 text-sm">
-      <label class="block">UPI ID
-        <input id="upiId" class="ownerField mt-1 w-full rounded-lg border px-3 py-2" 
-          value="rahulsatav5062-3@okaxis" readonly>
-      </label>
-      <label class="block">Payee Name
-        <input id="payeeName" class="ownerField mt-1 w-full rounded-lg border px-3 py-2" 
-          value="Rahul Shahaji Satav" readonly>
-      </label>
-      <label class="block">Site Base URL (for verify links)
-        <input id="siteBase" class="ownerField mt-1 w-full rounded-lg border px-3 py-2" 
-          value="https://rahul-satav.github.io/SkillCert/" readonly>
-      </label>
-    </div>
-    <p class="text-xs text-slate-500 mt-2">
-      Used to generate permanent <code>verify.html?uid=XXXX</code> links. Locked for users.
-    </p>
-  </section>
-
-  <!-- Skill Selection -->
-  <section>
-    <h2 class="text-base font-semibold mb-3">Popular Skills</h2>
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-      <button class="skillBtn border rounded-lg py-2 bg-white hover:bg-indigo-50" data-skill="Java + Spring">Java + Spring</button>
-      <button class="skillBtn border rounded-lg py-2 bg-white hover:bg-indigo-50" data-skill="Angular">Angular</button>
-      <button class="skillBtn border rounded-lg py-2 bg-white hover:bg-indigo-50" data-skill="React">React</button>
-      <button class="skillBtn border rounded-lg py-2 bg-white hover:bg-indigo-50" data-skill="AWS">AWS</button>
-      <button class="skillBtn border rounded-lg py-2 bg-white hover:bg-indigo-50" data-skill="SQL">SQL</button>
-      <button class="skillBtn border rounded-lg py-2 bg-white hover:bg-indigo-50" data-skill="Data Analysis">Data Analysis</button>
-      <button class="skillBtn border rounded-lg py-2 bg-white hover:bg-indigo-50" data-skill="Cyber Security">Cyber Security</button>
-      <button class="skillBtn border rounded-lg py-2 bg-white hover:bg-indigo-50" data-skill="DevOps">DevOps</button>
-    </div>
-  </section>
-
-  <!-- Quiz Section -->
-  <section id="quiz" class="rounded-2xl border p-4 bg-white shadow-sm">
-    <h2 class="text-base font-semibold mb-3">Quick Skill Assessment</h2>
-    <div id="quizBox" class="space-y-3"></div>
-    <button id="submitQuiz" class="btn mt-3 px-4 py-2 bg-indigo-600 text-white rounded-lg">Submit Quiz</button>
-  </section>
-
-  <!-- Certificate Section -->
-  <section id="certsection" class="hidden rounded-2xl border p-4 bg-white shadow-sm">
-    <div class="flex items-center justify-between mb-3">
-      <h2 class="text-base font-semibold">Your Certificate</h2>
-      <div class="flex gap-2">
-        <button id="pngBtn" class="px-3 py-1.5 rounded-lg bg-slate-200 text-sm">Download PNG</button>
-        <button id="pdfBtn" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-sm">Download PDF</button>
-      </div>
-    </div>
-
-    <div id="certCard" class="relative mx-auto max-w-[1100px] rounded-2xl bg-white shadow-lg p-10">
-      <div class="text-center mb-6">
-        <img src="assets/logo.svg" alt="Logo" class="mx-auto mb-3 w-10 h-10">
-        <h1 class="text-2xl font-bold">Certificate of Achievement</h1>
-      </div>
-
-      <p class="text-slate-600 text-center mb-2">This certifies that</p>
-      <h2 id="certName" class="text-4xl font-bold text-center mb-3 capitalize">Name</h2>
-      <p class="text-center text-lg">has demonstrated skill in</p>
-      <h3 id="certSkill" class="text-2xl font-bold text-center mt-1 mb-4"></h3>
-      <p class="text-center text-slate-600 text-sm">
-        For demonstrating practical expertise via a proctored 5-question assessment and meeting the passing criteria.
-      </p>
-
-      <div class="flex justify-between items-end mt-10">
-        <div>
-          <p class="font-medium">Issued by <span id="issuer">Rahul Shahaji Satav</span></p>
-          <p class="text-xs text-slate-500">Date: <span id="certDate"></span><br>UID: <span id="certUID"></span></p>
-        </div>
-        <div>
-          <img id="qrCode" alt="Verify QR" class="w-28 h-28 border rounded-lg bg-white"/>
-          <p class="text-xs text-center text-slate-500 mt-1">Scan to verify</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<!-- Footer -->
-<footer class="mt-auto bg-white py-4 text-center text-xs text-slate-500">
-  © 2025 Rahul Shahaji Satav — SkillCert Platform
-</footer>
-
-<!-- Script -->
 <script>
-  const PASS = "Pintya@123";
-  function hardLockOwnerFields(lock = true){
-    document.querySelectorAll('.ownerField').forEach(el=>{
-      el.readOnly = lock;
-      el.classList.toggle('bg-slate-100', lock);
-      el.addEventListener('paste', e => lock && e.preventDefault());
-      el.addEventListener('drop',  e => lock && e.preventDefault());
-      el.addEventListener('keydown', e => lock && e.preventDefault());
-    });
-  }
-  hardLockOwnerFields(true);
-  document.getElementById('unlockOwnerBtn').addEventListener('click', ()=>{
-    const p = prompt("Enter admin password to edit Owner Settings:");
-    if (p === PASS){
-      hardLockOwnerFields(false);
-      unlockOwnerBtn.textContent = "🔓 Editing enabled";
-      unlockOwnerBtn.disabled = true;
-    } else if (p !== null) alert("Wrong password.");
-  });
+  /* ---------- helpers ---------- */
+  const $  = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const fancyScroll = id => window.scrollTo({top: document.querySelector(id).offsetTop - 70, behavior:'smooth'});
 
-  // Quiz Generation
-  const quizBox = document.getElementById('quizBox');
-  const questions = [
-    {q:"What is Java primarily used for?", a:["Web","AI","Data","Games"], c:0},
-    {q:"Angular is a...", a:["Framework","Language","Database","Tool"], c:0},
-    {q:"React uses ___ data flow.", a:["One-way","Two-way","No","Circular"], c:0},
-    {q:"AWS stands for?", a:["Amazon Web Services","Advanced Web System","Azure Web Set","None"], c:0},
-    {q:"SQL is used for?", a:["Databases","Design","DevOps","Docs"], c:0},
+  /* ---------- skills ---------- */
+  const skills = [
+    "Java + Spring Boot","Angular","React","Node.js","Python","Django","Flask","FastAPI",
+    "C","C++","C#",".NET","Ruby on Rails","Go","Rust","Kotlin","Swift","Objective-C",
+    "Android","iOS","React Native","Flutter","HTML & CSS","JavaScript","TypeScript",
+    "SQL","NoSQL","MongoDB","PostgreSQL","MySQL","Firebase","GraphQL","REST APIs",
+    "Docker","Kubernetes","DevOps","CI/CD","Git & GitHub","Linux","Bash","Networking",
+    "AWS","Azure","GCP","Cloud Security","Cyber Security","Ethical Hacking","Pen-Testing",
+    "Data Analysis","Power BI","Tableau","Excel","Pandas","NumPy","Machine Learning",
+    "Deep Learning","NLP","Computer Vision","MLOps","Data Engineering","Spark","Hadoop",
+    "Salesforce","ServiceNow","QA Automation","Selenium","Playwright","Cypress","JMeter",
+    "UI/UX Design","Figma","Canva","Business Analytics","Blockchain","Web3","Solidity"
   ];
-  questions.forEach((item,i)=>{
-    const div=document.createElement('div');
-    div.innerHTML=`<p class="font-medium">${i+1}. ${item.q}</p>`+
-      item.a.map((opt,j)=>`<label class="block"><input type="radio" name="q${i}" value="${j}" class="mr-2">${opt}</label>`).join('');
-    quizBox.appendChild(div);
+  const skillsGrid = $("#skillsGrid");
+  skills.forEach(s=>{
+    const b = document.createElement('button');
+    b.textContent = s;
+    b.className = "card px-3 py-2 rounded-lg border bg-white hover:bg-indigo-50 text-sm";
+    b.onclick = () => { $("#skillName").value = s; fancyScroll('#form'); };
+    skillsGrid.appendChild(b);
   });
 
-  document.getElementById('submitQuiz').addEventListener('click', ()=>{
-    let score=0;
-    questions.forEach((item,i)=>{
-      const sel = document.querySelector(`input[name="q${i}"]:checked`);
-      if(sel && parseInt(sel.value)===item.c) score++;
+  /* ---------- question bank (some real, generic fallback otherwise) ---------- */
+  const bank = {
+    "Java + Spring Boot":[
+      {q:"Which annotation starts a Spring Boot app?",a:["@SpringBootApplication","@EnableAutoConfiguration","@ComponentScan","@RestController"],c:0},
+      {q:"Default embedded server?",a:["Tomcat","Jetty","Undertow","Netty"],c:0},
+      {q:"Config file?",a:["application.properties","pom.xml","settings.gradle","bootstrap.yml"],c:0},
+      {q:"JPA stands for…",a:["Java Persistence API","Java Package API","Java Processing API","JSON Persistence API"],c:0},
+      {q:"Maps HTTP GET:",a:["@GetMapping","@PostMapping","@RequestBody","@PathVariable"],c:0}
+    ],
+    "React":[
+      {q:"React state updates are…",a:["Asynchronous","Synchronous","Blocking","None"],c:0},
+      {q:"JSX compiles to…",a:["React.createElement","HTML strings","DOM nodes","CSS"],c:0},
+      {q:"Hook for side effects?",a:["useEffect","useState","useMemo","useRef"],c:0},
+      {q:"Keys in lists should be…",a:["Stable & unique","Random each render","Index always","Same for all"],c:0},
+      {q:"To lift state up you…",a:["Move state to common parent","Use context only","Global variable","Refs only"],c:0}
+    ],
+    "AWS":[
+      {q:"S3 is used for…",a:["Object storage","Compute","Queues","DB"],c:0},
+      {q:"EC2 provides…",a:["Virtual servers","Object storage","Data warehouse","Email"],c:0},
+      {q:"Lambda is…",a:["Serverless compute","File storage","VPC","CDN"],c:0},
+      {q:"RDS manages…",a:["Relational DBs","Queues","Monitoring","DNS"],c:0},
+      {q:"CloudFront is a…",a:["CDN","SQL engine","IDE","OS"],c:0}
+    ],
+    "SQL":[
+      {q:"Which keyword returns rows?",a:["SELECT","PUT","FIND","GET"],c:0},
+      {q:"JOIN combines rows from…",a:["Multiple tables","One column","File system","Logs"],c:0},
+      {q:"To filter rows use…",a:["WHERE","ORDER","GROUP","HAVING only"],c:0},
+      {q:"Aggregate function?",a:["COUNT","PRINT","SUMIF","MAP"],c:0},
+      {q:"Primary key is…",a:["Unique identifier","A foreign key","A view","A file"],c:0}
+    ]
+  };
+
+  /* ---------- start quiz ---------- */
+  $("#startQuizBtn").addEventListener('click', () => {
+    const name  = $("#userName").value.trim();
+    const email = $("#userEmail").value.trim();
+    const skill = $("#skillName").value.trim();
+    if(!name || !email || !skill){ toast("Please enter your name, email and skill."); return; }
+    if(email.toLowerCase() !== "rahul@gmail.com"){ toast("For demo, email must be rahul@gmail.com"); return; }
+
+    const set = bank[skill] || [
+      {q:`${skill}: Which statement is true?`,a:["It improves with practice","It cannot be measured","Only theory matters","None"],c:0},
+      {q:"A strong portfolio shows…",a:["Applied skill","Only certs","Only grades","Only theory"],c:0},
+      {q:"Version control used is…",a:["Git","SVN only","Zip files","Email"],c:0},
+      {q:"Writing tests helps…",a:["Quality & confidence","Slows everything","Costs only","Nothing"],c:0},
+      {q:"Docs should be…",a:["Clear & updated","Skipped","Private only","Screenshots"],c:0}
+    ];
+
+    // Build quiz
+    $("#quizContainer").innerHTML = "";
+    set.slice(0,5).forEach((item,idx)=>{
+      const div = document.createElement('div');
+      div.className = "rounded-xl border p-3 bg-white/80";
+      div.innerHTML = `
+        <p class="font-medium">${idx+1}. ${item.q}</p>
+        <div class="mt-2 grid sm:grid-cols-2 gap-2">
+          ${item.a.map((opt,i)=>`
+            <label class="inline-flex items-center gap-2 text-sm">
+              <input type="radio" name="q${idx}" value="${i}">
+              <span>${opt}</span>
+            </label>`).join('')}
+        </div>`;
+      $("#quizContainer").appendChild(div);
     });
-    if(score>=4){
-      alert("✅ Passed! Generating certificate...");
-      generateCertificate();
-    }else{
-      alert("❌ You need at least 80% to pass.");
+    $("#quizSkill").textContent = skill;
+    $("#quiz").classList.remove('hidden');
+    fancyScroll('#quiz');
+  });
+
+  /* ---------- submit quiz (with modern fail modal + retake) ---------- */
+  const failModal = $("#failModal");
+  const closeFail = $("#closeFail");
+  const retakeBtn = $("#retakeBtn");
+
+  $("#submitQuizBtn").addEventListener('click', async () => {
+    let score = 0;
+    for(let i=0;i<5;i++){
+      const chosen = document.querySelector(`input[name="q${i}"]:checked`);
+      // in our sets, correct answers are at index 0
+      if(chosen && Number(chosen.value)===0) score++;
+    }
+    const pct = Math.round((score/5)*100);
+    const res = $("#quizResult");
+    res.textContent = `Score: ${score}/5 (${pct}%)`;
+    res.className = "text-sm font-medium " + (pct>=80?"text-emerald-600":"text-rose-600");
+
+    if(pct>=80){
+      // Build certificate DOM then export to PDF
+      buildCertificate();
+      await new Promise(r=>setTimeout(r,200)); // small paint delay
+      autoDownloadPDF();
+    } else {
+      // Show modern modal with retake
+      failModal.classList.remove('hidden');
+      failModal.classList.add('flex');
     }
   });
 
-  let selectedSkill = null;
-  document.querySelectorAll('.skillBtn').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      selectedSkill = btn.dataset.skill;
-      document.querySelectorAll('.skillBtn').forEach(b=>b.classList.remove('bg-indigo-100'));
-      btn.classList.add('bg-indigo-100');
-    });
+  closeFail.addEventListener('click', ()=> {
+    failModal.classList.add('hidden');
+    failModal.classList.remove('flex');
   });
 
-  function generateCertificate(){
-    if(!selectedSkill) return alert("Please select a skill first.");
-    const name = prompt("Enter your full name:");
-    if(!name) return;
-    const uid = Math.random().toString(36).substr(2,8).toUpperCase();
-    const date = new Date().toLocaleDateString();
+  retakeBtn.addEventListener('click', ()=> {
+    // Reset all quiz radio buttons
+    for (let i=0;i<5;i++){
+      document.querySelectorAll(`input[name="q${i}"]`).forEach(inp=>inp.checked=false);
+    }
+    $("#quizResult").textContent="";
+    failModal.classList.add('hidden');
+    failModal.classList.remove('flex');
+    fancyScroll('#quiz');
+  });
 
-    document.getElementById('certName').textContent = name;
-    document.getElementById('certSkill').textContent = selectedSkill;
-    document.getElementById('certUID').textContent = uid;
-    document.getElementById('certDate').textContent = date;
-    document.getElementById('certsection').classList.remove('hidden');
-
-    const verifyURL = `${document.getElementById('siteBase').value}verify.html?uid=${uid}`;
-    QRCode.toDataURL(verifyURL,{width:150},(err,url)=>{
-      document.getElementById('qrCode').src=url;
-    });
+  /* ---------- certificate builder ---------- */
+  function buildCertificate(){
+    $("#certName").textContent = $("#userName").value.trim();
+    $("#certSkill").textContent = $("#skillName").value.trim();
+    $("#certDate").textContent  = new Date().toLocaleDateString();
+    $("#certArea").classList.remove('hidden');
   }
 
-  document.getElementById('pngBtn').addEventListener('click', ()=>{
-    htmlToImage.toPng(document.getElementById('certCard')).then(dataUrl=>{
-      const link=document.createElement('a');
-      link.download='certificate.png';
-      link.href=dataUrl;
-      link.click();
-    });
-  });
-
-  document.getElementById('pdfBtn').addEventListener('click', ()=>{
-    htmlToImage.toPng(document.getElementById('certCard')).then(dataUrl=>{
+  /* ---------- export PDF ---------- */
+  async function autoDownloadPDF(){
+    const node = document.getElementById('certCard');
+    // ensure all images are loaded
+    await Promise.all([...node.querySelectorAll('img')].map(img=>{
+      if(img.complete && img.naturalWidth>0) return Promise.resolve();
+      return new Promise(res=>{ img.onload=res; img.onerror=res; });
+    }));
+    try{
+      const dataUrl = await htmlToImage.toPng(node,{pixelRatio:2,cacheBust:true,useCORS:true});
       const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF('l','pt','a4');
-      const imgProps = pdf.getImageProperties(dataUrl);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      pdf.addImage(dataUrl,'PNG',0,0,pdfWidth,pdfHeight);
-      pdf.save('certificate.pdf');
-    });
-  });
-</script>
+      const pdf = new jsPDF({orientation:'landscape', unit:'pt', format:'a4'});
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const img = new Image(); img.src = dataUrl;
+      img.onload = () => {
+        const ratio = Math.min(pageW/img.width, pageH/img.height);
+        const w = img.width * ratio, h = img.height * ratio;
+        pdf.addImage(dataUrl, 'PNG', (pageW-w)/2, (pageH-h)/2, w, h);
+        pdf.save('SkillCert_Certificate.pdf');
+        window.scrollTo({top:0,behavior:'smooth'});
+        toast("🎉 Certificate downloaded! Add it to your resume and LinkedIn.");
+      };
+    }catch(e){
+      console.error(e);
+      toast("PDF export failed. Try once more (refresh).");
+    }
+  }
 
+  /* ---------- tiny toast ---------- */
+  function toast(msg){
+    const el=document.createElement('div');
+    el.textContent=msg;
+    el.className="fixed left-1/2 -translate-x-1/2 bottom-6 px-4 py-2 rounded-xl text-white text-sm shadow-lg z-50";
+    el.style.background="linear-gradient(90deg, var(--a), var(--b), var(--c))";
+    document.body.appendChild(el);
+    setTimeout(()=>{ el.style.opacity='.0'; el.style.transition='opacity .5s'; setTimeout(()=>el.remove(),500); },2200);
+  }
+
+  /* footer year */
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
 </body>
 </html>
