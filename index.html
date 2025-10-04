@@ -7,11 +7,8 @@
   <meta name="description" content="Get a professional, recruiter-ready certificate by passing a quick 5-question skill test. Perfect for resume and jobs."/>
   <link rel="icon" href="assets/logo.svg"/>
 
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <!-- Export libs -->
   <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -59,7 +56,6 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <!-- Header -->
   <header class="bg-white/80 backdrop-blur border-b">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2">
@@ -74,7 +70,6 @@
     </div>
   </header>
 
-  <!-- Hero -->
   <section class="hero text-white border-b">
     <div class="max-w-6xl mx-auto px-4 py-12">
       <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">🚀 Get Instant Verified Certificates</h1>
@@ -89,7 +84,6 @@
 
   <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
 
-    <!-- Skills -->
     <section id="skills" class="rounded-2xl border bg-white p-4">
       <div class="flex items-center justify-between">
         <h2 class="text-base font-semibold">Choose Your Skill</h2>
@@ -98,7 +92,6 @@
       <div id="skillsGrid" class="mt-3 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2"></div>
     </section>
 
-    <!-- Details -->
     <section id="form" class="rounded-2xl border bg-white p-4">
       <h2 class="text-base font-semibold mb-3">Your Details</h2>
       <div class="grid sm:grid-cols-3 gap-3">
@@ -120,7 +113,6 @@
       </div>
     </section>
 
-    <!-- Quiz -->
     <section id="quiz" class="hidden rounded-2xl border bg-white p-4">
       <div class="flex items-center justify-between">
         <h2 class="text-base font-semibold">Quick Test • <span id="quizSkill"></span></h2>
@@ -133,81 +125,78 @@
       </div>
     </section>
 
-    <!-- Certificate Preview (scaled visually only) -->
     <section id="certArea" class="hidden">
       <div class="mx-auto w-full overflow-auto flex justify-center">
         <div class="origin-top scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-[0.9]">
           <div id="certCard" class="relative cert-paper cert-canvas overflow-hidden">
-            <!-- Ornaments -->
             <div class="orn tl"><svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
             <div class="orn tr"><svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
             <div class="orn bl"><svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
             <div class="orn br"><svg viewBox="0 0 120 120" fill="#6578ff"><path d="M12 90c18-10 35-27 45-45 12-21 32-33 53-37-20 12-33 29-44 49-10 18-28 32-54 33z"/></svg></div>
 
-            <!-- ===== Improved balanced layout ===== -->
             <div class="cert-inner rounded-[12px] flex flex-col justify-between h-full p-12">
-              <!-- Top content -->
               <div>
-    <div class="text-center">
-        <div class="text-[58px] font-extrabold cert-title tracking-[.08em]">CERTIFICATE</div>
-        <div class="mt-1 text-[16px] tracking-[0.25em] text-slate-600 font-semibold">OF COMPLETING A SKILL VALIDATION TEST</div>
-        <div class="mt-6 text-[14px] tracking-wide text-slate-600">This Official Credential is Conferred Upon</div>
-        <div id="certName" class="mt-2 text-[72px] font-extrabold text-[#3157d4] capitalize">R S Satav</div>
-    </div>
+                <div class="text-center">
+                    <div class="text-[58px] font-extrabold cert-title tracking-[.08em]">CERTIFICATE</div>
+                    <div class="mt-1 text-[16px] tracking-[0.25em] text-slate-600 font-semibold">OF COMPLETING A SKILL VALIDATION TEST</div>
+                    <div class="mt-6 text-[14px] tracking-wide text-slate-600">This Official Credential is Conferred Upon</div>
+                    <div id="certName" class="mt-2 text-[72px] font-extrabold text-[#3157d4] capitalize">Rahul Shahaji Satav</div>
+                </div>
 
-    <div>
-    <div class="text-center">
-        <div class="text-[58px] font-extrabold cert-title tracking-[.08em]">CERTIFICATE</div>
-        <div class="mt-1 text-[16px] tracking-[0.25em] text-slate-600 font-semibold">OF COMPLETING A SKILL VALIDATION TEST</div>
-        <div class="mt-6 text-[14px] tracking-wide text-slate-600">This Official Credential is Conferred Upon</div>
-        <div id="certName" class="mt-2 text-[72px] font-extrabold text-[#3157d4] capitalize">Rahul Shahaji Satav</div>
-    </div>
+                <div class="mx-[120px] mt-6"><div class="fancy-hr"></div></div>
 
-    <div class="mx-[120px] mt-6"><div class="fancy-hr"></div></div>
+                <div class="mt-4 text-center text-[18px] text-slate-700 leading-relaxed px-[120px]">
+                    Has successfully completed, mastered, and rigorously validated their advanced expertise in the
+                    <b id="certSkill">Rust</b> skill test,
+                    achieving an exceptional and commendable final score of <b id="certScore">100%</b>,
+                    thereby securing the highly-coveted <b id="certLevel">Advanced</b> level certification.
+                    <br><br>
+                    This official and independently verified credential demonstrates an unwavering mastery of
+                    mission-critical core competencies, qualifying the holder as an invaluable and accomplished professional
+                    sought after by global industry leaders and major organizations, including
+                    Google, Amazon, Microsoft, IBM, Salesforce, and Cisco.
+                </div>
 
-    <div class="mt-4 text-center text-[18px] text-slate-700 leading-relaxed px-[120px]">
-        Has successfully completed, mastered, and rigorously validated their advanced expertise in the
-        <b id="certSkill">Rust</b> skill test,
-        achieving an exceptional and commendable final score of <b id="certScore">100%</b>,
-        thereby securing the highly-coveted <b id="certLevel">Advanced</b> level certification.
-        <br><br>
-        This official and independently verified credential demonstrates an unwavering mastery of
-        mission-critical core competencies, qualifying the holder as an invaluable and accomplished professional
-        sought after by global industry leaders and major organizations, including
-        Google, Amazon, Microsoft, IBM, Salesforce, and Cisco.
-    </div>
-
-    <div class="mt-6 text-center text-[12px] text-slate-500">
-        <div class="mt-4">
-            Date: <span id="certDate">10/4/2025</span>
-            <br>
-            Issued by: Rahul Shahaji Satav
-        </div>
-    </div>
-</div>
-
-                <div class="flex items-end justify-end">
-                  <div class="text-right leading-tight">
-                    <div class="flex items-center justify-end gap-2">
-                      <img src="assets/logo.svg" class="h-7 w-7" alt="logo">
-                      <div class="text-[28px] font-bold" style="background:linear-gradient(90deg,#2563eb,#06b6d4); -webkit-background-clip:text; color:transparent">SkillCert</div>
+                <div class="mt-6 text-center text-[12px] text-slate-500">
+                    <div class="mt-4">
+                        Date: <span id="certDate">10/4/2025</span>
+                        <br>
+                        Issued by: Rahul Shahaji Satav
                     </div>
-                    <!-- Clean Verify line (short text; link points to full encoded URL) -->
-                    <div class="mt-1 text-[12px] text-slate-500 leading-tight">
-                      UID: <span id="certUID">—</span><br/>
-                      Verify at:
-                      <a id="certVerifyText"
-                         class="underline text-slate-600"
-                         href="#"
-                         target="_blank"
-                         rel="noopener">https://rahul-satav.github.io/SkillCert/verify.html</a>
+                </div>
+              </div>
+
+              <div class="flex items-end justify-between mt-10">
+                <div class="flex items-end gap-4">
+                  <div id="medal" class="medal">1</div>
+                  <div class="text-left leading-tight">
+                    <div class="text-[12px] text-slate-500">
+                      Date: <span id="certDate2">10/4/2025</span>
+                      <br>
+                      Issued by: Rahul Shahaji Satav
                     </div>
                   </div>
                 </div>
+
+                <div class="text-right leading-tight">
+                  <div class="flex items-center justify-end gap-2">
+                    <img src="assets/logo.svg" class="h-7 w-7" alt="logo">
+                    <div class="text-[28px] font-bold" style="background:linear-gradient(90deg,#2563eb,#06b6d4); -webkit-background-clip:text; color:transparent">SkillCert</div>
+                  </div>
+                  <div class="mt-1 text-[12px] text-slate-500 leading-tight">
+                    UID: <span id="certUID">—</span><br/>
+                    Verify at:
+                    <a id="certVerifyText"
+                       class="underline text-slate-600"
+                       href="#"
+                       target="_blank"
+                       rel="noopener">https://rahul-satav.github.io/SkillCert/verify.html</a>
+                  </div>
+                </div>
               </div>
+
             </div>
-            <!-- ===== /Improved layout ===== -->
-          </div>
+            </div>
         </div>
       </div>
     </section>
@@ -218,7 +207,6 @@
     © <span id="year"></span> SkillCert • Recruiter-ready, professional certificates.
   </footer>
 
-  <!-- Fail Modal -->
   <div id="failModal" class="modal fixed inset-0 bg-black/50 backdrop-blur-sm items-center justify-center p-4 z-50">
     <div class="w-full max-w-sm rounded-2xl bg-white shadow-xl p-5">
       <div class="flex items-start gap-3">
@@ -394,6 +382,7 @@
     $("#certLevel").textContent = level;
     $("#medal").textContent     = medal;
     $("#certDate").textContent  = date;
+    $("#certDate2").textContent = date; // For the duplicate date field
 
     // Create UID + payload
     const uid = makeUID(8);
