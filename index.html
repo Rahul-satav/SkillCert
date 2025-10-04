@@ -273,17 +273,45 @@ function makeUID(n=8){
   return o;
 }
 
-/* ------------------ Download as PDF ------------------ */
-function downloadPDF(){
-  const element = document.getElementById('certCard');
-  const opt = {
+/* ----------------- Download as PDF ----------------- */
+function downloadPDF () {
+  const el = document.getElementById('certCard');
+
+  // Scroll to top and force a fixed A4 width while rendering
+  window.scrollTo(0, 0);
+  const prevMax = el.style.maxWidth;
+  const prevWidth = el.style.width;
+  el.style.maxWidth = 'none';
+  el.style.width = '794px';     // A4 width at 96 DPI
+  el.style.padding = el.style.padding || '40px';
+
+  const opts = {
     margin: 0,
     filename: 'SkillCert_Certificate.pdf',
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: 794
+    },
+    jsPDF: { unit: 'px', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['css', 'avoid-all'] }
   };
-  html2pdf().from(element).set(opt).save();
+
+  html2pdf()
+    .from(el)
+    .set(opts)
+    .save()
+    .then(() => {
+      el.style.maxWidth = prevMax || '';
+      el.style.width = prevWidth || '';
+    })
+    .catch(() => {
+      el.style.maxWidth = prevMax || '';
+      el.style.width = prevWidth || '';
+    });
 }
 
 /* ------------------ Retake ------------------ */
