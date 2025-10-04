@@ -7,57 +7,15 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
-    body {
-      background: #f5f6fa;
-      font-family: 'Inter', sans-serif;
-    }
-    .cert-container {
-      width: 100%;
-      max-width: 1100px;
-      margin: 0 auto;
-      background: white;
-      border: 6px solid #d4af37; /* gold border */
-      border-radius: 20px;
-      padding: 40px;
-      position: relative;
-      background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><path d="M0,40 Q80,0 160,40" stroke="%23d4af37" stroke-width="4" fill="none"/></svg>');
-      background-repeat: no-repeat;
-      background-position: top center;
-    }
-    .cert-title {
-      font-size: 52px;
-      font-weight: 800;
-      letter-spacing: 0.1em;
-      color: #4b3621;
-    }
-    .fancy-hr {
-      height: 2px;
-      background: linear-gradient(90deg, transparent, #3b82f6, transparent);
-    }
-    .medal {
-      background: radial-gradient(circle at 30% 30%, #ffd966, #d4af37);
-      height: 52px;
-      width: 52px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 20px;
-      color: #4b3621;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    @media (max-width: 768px) {
-      .cert-container {
-        padding: 20px;
-      }
-      #certName {
-        font-size: 48px;
-      }
-    }
+    body{background:#f5f6fa;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    .cert-container{width:100%;max-width:1100px;margin:0 auto;background:#fff;border:6px solid #d4af37;border-radius:20px;padding:40px;position:relative}
+    .cert-title{font-size:52px;font-weight:800;letter-spacing:.1em;color:#4b3621}
+    .fancy-hr{height:2px;background:linear-gradient(90deg,transparent,#3b82f6,transparent)}
+    .medal{background:radial-gradient(circle at 30% 30%,#ffd966,#d4af37);height:52px;width:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#4b3621;box-shadow:0 4px 8px rgba(0,0,0,.1)}
+    @media (max-width:768px){.cert-container{padding:20px}#certName{font-size:48px}}
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body class="min-h-screen flex flex-col items-center justify-start p-4">
 
   <!-- HEADER -->
   <header class="text-center mb-10">
@@ -65,9 +23,15 @@
     <p class="text-gray-500">Take a quick skill test and get your professional certificate instantly</p>
   </header>
 
-  <!-- SKILL SELECT -->
+  <!-- USER INPUTS -->
   <section class="w-full max-w-lg bg-white rounded-xl shadow p-6 mb-8">
-    <h2 class="text-xl font-semibold mb-4">Select a Skill</h2>
+    <h2 class="text-xl font-semibold mb-4">Your Details</h2>
+
+    <label class="block mb-3 text-sm font-medium">Full Name
+      <input id="fullName" class="mt-1 w-full border rounded px-3 py-2" placeholder="Enter your name" />
+    </label>
+
+    <h2 class="text-xl font-semibold mt-4 mb-2">Select a Skill</h2>
     <select id="skillSelect" class="w-full border rounded px-3 py-2">
       <option disabled selected>Choose a skill</option>
       <option>Java</option>
@@ -81,16 +45,20 @@
       <option>AWS</option>
       <option>Cyber Security</option>
     </select>
-    <button id="startQuiz" class="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Start Quiz</button>
+
+    <button id="startQuiz" class="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+      Start Quiz
+    </button>
   </section>
 
   <!-- QUIZ -->
   <section id="quizSection" class="w-full max-w-xl bg-white rounded-xl shadow p-6 hidden">
     <h2 class="text-xl font-semibold mb-4">Skill Quiz</h2>
-    <form id="quizForm" class="space-y-4">
-      <!-- Questions will be inserted here -->
-    </form>
-    <button id="submitQuiz" class="mt-4 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Submit Quiz</button>
+    <p id="quizSkillLabel" class="text-sm text-gray-500 mb-2"></p>
+    <form id="quizForm" class="space-y-4"></form>
+    <button id="submitQuiz" class="mt-4 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
+      Submit Quiz
+    </button>
   </section>
 
   <!-- FAIL MESSAGE -->
@@ -102,7 +70,6 @@
   <!-- CERTIFICATE -->
   <section id="certificateSection" class="hidden w-full flex justify-center mt-10">
     <div id="certCard" class="cert-container">
-
       <div class="flex flex-col h-full">
         <!-- Top -->
         <div class="text-center">
@@ -110,9 +77,7 @@
           <div class="mt-1 text-[13px] tracking-[0.25em] text-slate-600 font-semibold">
             OF COMPLETING A SKILL VALIDATION TEST
           </div>
-          <div class="mt-5 text-[12px] tracking-wide text-slate-500">
-            This Official Credential Is Conferred Upon
-          </div>
+          <div class="mt-5 text-[12px] tracking-wide text-slate-500">This Official Credential Is Conferred Upon</div>
           <div id="certName" class="mt-2 text-[64px] font-extrabold text-blue-700 capitalize">Name</div>
         </div>
 
@@ -135,7 +100,8 @@
           </div>
           <div class="mt-1 flex items-center gap-2">
             <img src="assets/logo.svg" class="h-7 w-7" alt="logo">
-            <div class="text-[26px] font-extrabold" style="background:linear-gradient(90deg,#1e40af,#3b82f6);-webkit-background-clip:text;color:transparent">
+            <div class="text-[26px] font-extrabold"
+                 style="background:linear-gradient(90deg,#1e40af,#3b82f6);-webkit-background-clip:text;color:transparent">
               SkillCert
             </div>
           </div>
@@ -146,96 +112,182 @@
   </section>
 
 <script>
-  const quizData = {
-    "Java": [
-      { q: "What is Java mainly used for?", options: ["AI", "Web", "Games", "Design"], answer: 1 },
-      { q: "Java supports ___ programming", options: ["Functional", "Object-Oriented", "Procedural", "None"], answer: 1 },
-      { q: "Which keyword is used to inherit a class?", options: ["this", "super", "extends", "implements"], answer: 2 },
-      { q: "Which of these is not a Java feature?", options: ["Platform Independent", "Secure", "Dynamic", "Pointer Arithmetic"], answer: 3 },
-      { q: "What is JVM?", options: ["Java Virtual Machine", "Just Virtual Mode", "Java Vendor Management", "None"], answer: 0 }
-    ]
-    // Add more for other skills
+/* ------------------ Question bank for each skill (5 Q each) ------------------ */
+const quizData = {
+  "Java":[
+    {q:"What is Java mainly used for?",a:["AI","Web","Games","Design"],c:1},
+    {q:"Java supports ___ programming",a:["Functional","Object-Oriented","Procedural","None"],c:1},
+    {q:"Keyword to inherit a class?",a:["this","super","extends","implements"],c:2},
+    {q:"Which is NOT a Java feature?",a:["Platform Independent","Secure","Dynamic","Pointer Arithmetic"],c:3},
+    {q:"JVM stands for…",a:["Java Virtual Machine","Just Virtual Mode","Java Vendor Management","None"],c:0}
+  ],
+  "Angular":[
+    {q:"Angular is a…",a:["Language","Framework","Database","Runtime"],c:1},
+    {q:"Two-way binding uses…",a:["[]","()","[()]","{}"],c:2},
+    {q:"Service is injected using…",a:["DI","AJAX","SSR","CSR"],c:0},
+    {q:"Angular CLI command to create component?",a:["ng c","ng g c","ng n c","ng new c"],c:1},
+    {q:"Template syntax is…",a:["{{ }}","[[ ]]","<< >>","( )"],c:0}
+  ],
+  "React":[
+    {q:"React state updates are…",a:["Async","Sync","Blocking","None"],c:0},
+    {q:"JSX compiles to…",a:["React.createElement","HTML","DOM nodes","CSS"],c:0},
+    {q:"Hook for side effects?",a:["useEffect","useState","useMemo","useRef"],c:0},
+    {q:"Keys in lists should be…",a:["Stable & unique","Random","Index always","Same key"],c:0},
+    {q:"Lifting state up means…",a:["Move to common parent","Use context only","Global var","Refs"],c:0}
+  ],
+  "Node.js":[
+    {q:"Node.js runs on…",a:["Browser","Server-side JS runtime","DB","OS"],c:1},
+    {q:"Package manager?",a:["npm","pip","mvn","gradle"],c:0},
+    {q:"Express is…",a:["DB","Framework","CLI","ORM"],c:1},
+    {q:"CommonJS import uses…",a:["require","import","using","load"],c:0},
+    {q:"Environment variables from .env via…",a:["dotenv","envload","loadenv","config"],c:0}
+  ],
+  "SQL":[
+    {q:"Returns rows…",a:["SELECT","PUT","FIND","GET"],c:0},
+    {q:"JOIN combines rows from…",a:["Multiple tables","One column","File","Logs"],c:0},
+    {q:"Filter rows…",a:["WHERE","ORDER","GROUP","HAVING only"],c:0},
+    {q:"Aggregate func?",a:["COUNT","PRINT","SUMIF","MAP"],c:0},
+    {q:"Primary key is…",a:["Unique identifier","Foreign key","View","File"],c:0}
+  ],
+  "Python":[
+    {q:"Python is…",a:["Compiled only","Interpreted (mostly)","Assembly","Bytecode only"],c:1},
+    {q:"Dict literal is…",a:["[]","()","{}","<>"],c:2},
+    {q:"Virtual env tool?",a:["venv","npm","conda install node","gradle"],c:0},
+    {q:"Pandas used for…",a:["Data analysis","Web sockets","3D games","Auth"],c:0},
+    {q:"PEP8 relates to…",a:["Style guide","Package manager","DB","Web server"],c:0}
+  ],
+  "FastAPI":[
+    {q:"FastAPI is a…",a:["Python web framework","JS runtime","DB","Message queue"],c:0},
+    {q:"Default server commonly used?",a:["Uvicorn","Tomcat","Jetty","Apache"],c:0},
+    {q:"Type hints are used for…",a:["Validation & docs","Speed only","No use","Security"],c:0},
+    {q:"Auto docs URL…",a:["/docs","/apidoc","/swagger","/openapi"],c:0},
+    {q:"Dependency injection available?",a:["Yes","No","Only plugins","Deprecated"],c:0}
+  ],
+  "Data Analysis":[
+    {q:"Tool widely used?",a:["Pandas","Nginx","Kafka Connect","Babel"],c:0},
+    {q:"Mean is…",a:["Average","Middle value","Most frequent","Range"],c:0},
+    {q:"Visualization lib?",a:["Matplotlib","Requests","Boto3","Cryptography"],c:0},
+    {q:"CSV stands for…",a:["Comma-Separated Values","Custom Service Values","Common Save Variant","None"],c:0},
+    {q:"EDA stands for…",a:["Exploratory Data Analysis","Extra Data Audit","Entity Data Access","None"],c:0}
+  ],
+  "AWS":[
+    {q:"S3 is…",a:["Object storage","Compute","Queue","DB"],c:0},
+    {q:"EC2 provides…",a:["Virtual servers","Object store","Warehouse","Email"],c:0},
+    {q:"Lambda is…",a:["Serverless compute","File storage","VPC","CDN"],c:0},
+    {q:"RDS manages…",a:["Relational DBs","Queues","Monitoring","DNS"],c:0},
+    {q:"CloudFront is a…",a:["CDN","SQL engine","IDE","OS"],c:0}
+  ],
+  "Cyber Security":[
+    {q:"CIA triad means…",a:["Confidentiality, Integrity, Availability","Control, Inspect, Audit","Code, Infra, Access","None"],c:0},
+    {q:"Hashing is…",a:["One-way","Two-way","Encryption","Compression"],c:0},
+    {q:"MFA adds…",a:["Extra auth factor","Firewall","VPN","Proxy"],c:0},
+    {q:"OWASP focuses on…",a:["Web app security","Network routing","Kernel dev","Cloud billing"],c:0},
+    {q:"Phishing targets…",a:["Users","Routers","Cables","CDNs"],c:0}
+  ]
+};
+
+/* ------------------ Helpers ------------------ */
+const $ = (s)=>document.querySelector(s);
+const quizSection = $("#quizSection"), quizForm = $("#quizForm");
+const submitBtn = $("#submitQuiz"), startBtn = $("#startQuiz");
+const failMessage = $("#failMessage"), retakeBtn = $("#retakeBtn");
+const certificateSection = $("#certificateSection");
+
+/* ------------------ Start quiz ------------------ */
+startBtn.addEventListener("click", ()=>{
+  const name = $("#fullName").value.trim();
+  const skill = $("#skillSelect").value;
+
+  if(!name){ alert("Please enter your name."); return; }
+  if(!skill || skill==="Choose a skill"){ alert("Please select a skill."); return; }
+
+  generateQuiz(skill);
+  $("#quizSkillLabel").textContent = `Skill: ${skill}`;
+  quizSection.classList.remove("hidden");
+  window.scrollTo({top: quizSection.offsetTop-20, behavior: "smooth"});
+});
+
+/* ------------------ Build quiz UI ------------------ */
+function generateQuiz(skill){
+  quizForm.innerHTML = "";
+  const items = quizData[skill];
+  if(!items){ alert("Questions for this skill are not available yet."); return; }
+
+  items.forEach((item, idx)=>{
+    const block = document.createElement("div");
+    block.className = "border rounded p-3";
+    block.innerHTML = `
+      <p class="font-semibold mb-2">${idx+1}. ${item.q}</p>
+      ${item.a.map((opt,i)=>`
+        <label class="block"><input type="radio" name="q${idx}" value="${i}" class="mr-2"> ${opt}</label>
+      `).join("")}
+    `;
+    quizForm.appendChild(block);
+  });
+
+  // attach submit
+  submitBtn.onclick = ()=> gradeQuiz(skill);
+}
+
+/* ------------------ Grade & either show cert or fail ------------------ */
+function gradeQuiz(skill){
+  const items = quizData[skill];
+  let score = 0;
+  for (let i=0;i<items.length;i++){
+    const chosen = (quizForm[`q${i}`] || {}).value;
+    if (chosen !== undefined && Number(chosen) === items[i].c) score++;
+  }
+  const pct = Math.round((score/items.length)*100);
+
+  if (pct >= 80){
+    buildCertificate(skill, pct);
+    certificateSection.classList.remove("hidden");
+    failMessage.classList.add("hidden");
+    quizSection.classList.add("hidden");
+    setTimeout(downloadPDF, 600);
+  } else {
+    certificateSection.classList.add("hidden");
+    failMessage.classList.remove("hidden");
+    quizSection.classList.add("hidden");
+  }
+}
+
+/* ------------------ Certificate data fill ------------------ */
+function buildCertificate(skill, pct){
+  const name = $("#fullName").value.trim();
+  const level = pct>=93 ? "Advanced" : (pct>=85 ? "Proficient" : "Intermediate");
+  const medal = pct>=93 ? "1" : (pct>=85?"2":"3");
+  $("#certName").textContent = name || "Candidate";
+  $("#certSkill").textContent = skill;
+  $("#certScore").textContent = `${pct}%`;
+  $("#certLevel").textContent = level;
+  $("#certDate").textContent = new Date().toLocaleDateString();
+  $("#certUID").textContent = makeUID(8);
+  $("#medal").textContent = medal;
+}
+
+/* ------------------ Utilities ------------------ */
+function makeUID(n=8){
+  const s="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let o="";
+  for(let i=0;i<n;i++) o+=s[Math.floor(Math.random()*s.length)];
+  return o;
+}
+
+/* ------------------ Download as PDF ------------------ */
+function downloadPDF(){
+  const element = document.getElementById('certCard');
+  const opt = {
+    margin: 0,
+    filename: 'SkillCert_Certificate.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
   };
+  html2pdf().from(element).set(opt).save();
+}
 
-  const startBtn = document.getElementById('startQuiz');
-  const skillSelect = document.getElementById('skillSelect');
-  const quizSection = document.getElementById('quizSection');
-  const quizForm = document.getElementById('quizForm');
-  const submitBtn = document.getElementById('submitQuiz');
-  const certificateSection = document.getElementById('certificateSection');
-  const failMessage = document.getElementById('failMessage');
-  const retakeBtn = document.getElementById('retakeBtn');
-
-  startBtn.addEventListener('click', () => {
-    const skill = skillSelect.value;
-    if (!skill || skill === 'Choose a skill') return alert('Please select a skill');
-    generateQuiz(skill);
-    quizSection.classList.remove('hidden');
-    startBtn.disabled = true;
-  });
-
-  function generateQuiz(skill) {
-    quizForm.innerHTML = '';
-    quizData[skill].forEach((item, index) => {
-      const div = document.createElement('div');
-      div.innerHTML = `
-        <p class="font-semibold mb-2">${index+1}. ${item.q}</p>
-        ${item.options.map((opt, i) =>
-          `<label class="block"><input type="radio" name="q${index}" value="${i}" class="mr-2"> ${opt}</label>`
-        ).join('')}
-      `;
-      quizForm.appendChild(div);
-    });
-  }
-
-  submitBtn.addEventListener('click', () => {
-    const skill = skillSelect.value;
-    const answers = quizData[skill];
-    let score = 0;
-    answers.forEach((item, idx) => {
-      const selected = quizForm[`q${idx}`].value;
-      if (selected == item.answer) score++;
-    });
-    const percent = (score / answers.length) * 100;
-
-    if (percent >= 80) {
-      generateCertificate(skill, percent);
-    } else {
-      failMessage.classList.remove('hidden');
-      quizSection.classList.add('hidden');
-    }
-  });
-
-  retakeBtn.addEventListener('click', () => {
-    location.reload();
-  });
-
-  function generateCertificate(skill, score) {
-    document.getElementById('certName').innerText = "Rahul Satav";
-    document.getElementById('certSkill').innerText = skill;
-    document.getElementById('certScore').innerText = `${score}%`;
-    document.getElementById('certLevel').innerText = score >= 90 ? 'Advanced' : 'Intermediate';
-    document.getElementById('certDate').innerText = new Date().toLocaleDateString();
-    document.getElementById('certUID').innerText = Math.random().toString(36).substring(2,10).toUpperCase();
-
-    certificateSection.classList.remove('hidden');
-    quizSection.classList.add('hidden');
-    failMessage.classList.add('hidden');
-
-    setTimeout(() => downloadPDF(), 1000);
-  }
-
-  function downloadPDF() {
-    const element = document.getElementById('certCard');
-    const opt = {
-      margin: 0,
-      filename: 'SkillCert_Certificate.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
-    html2pdf().from(element).set(opt).save();
-  }
+/* ------------------ Retake ------------------ */
+retakeBtn.addEventListener("click", ()=> location.reload());
 </script>
 </body>
 </html>
