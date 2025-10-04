@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillCert Admin</title>
+  <link rel="icon" href="assets/logo.svg">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+  <main class="max-w-5xl mx-auto p-6">
+    <div class="flex items-center gap-3 mb-4">
+      <img src="assets/logo.svg" class="h-8 w-8" alt="logo">
+      <h1 class="text-xl font-semibold">SkillCert • Admin</h1>
+    </div>
+
+    <section id="gate" class="rounded-2xl border bg-white p-5">
+      <h2 class="font-semibold mb-2">Enter admin password</h2>
+      <input id="pwd" type="password" class="rounded-lg border px-3 py-2" placeholder="Password">
+      <button id="enter" class="ml-2 px-3 py-2 rounded-lg bg-slate-900 text-white">Enter</button>
+      <p class="text-xs text-slate-500 mt-2">Password: <code>Pintya@123</code></p>
+    </section>
+
+    <section id="panel" class="hidden rounded-2xl border bg-white p-5 mt-4">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-semibold">Issued Certificates (local)</h2>
+        <a href="https://github.com/Rahul-satav/SkillCert/tree/main/data" target="_blank" class="text-sm underline">Open data folder on GitHub</a>
+      </div>
+      <div id="list" class="text-sm"></div>
+    </section>
+  </main>
+
+<script>
+const PASS = "Pintya@123";
+document.getElementById('enter').onclick = () => {
+  if (document.getElementById('pwd').value === PASS) {
+    document.getElementById('gate').classList.add('hidden');
+    document.getElementById('panel').classList.remove('hidden');
+    load();
+  } else {
+    alert("Wrong password.");
+  }
+};
+
+function load() {
+  const container = document.getElementById('list');
+  const items = JSON.parse(localStorage.getItem('skillcert_issued') || "[]");
+  if (items.length === 0) {
+    container.innerHTML = "<p>No certificates issued from this browser yet.</p>";
+    return;
+  }
+  container.innerHTML = items.map(c => `
+    <div class="border rounded-xl p-3 mb-2 grid grid-cols-2 md:grid-cols-6 gap-2 items-center">
+      <div><div class="text-slate-500">Name</div><div class="font-medium">${c.name}</div></div>
+      <div><div class="text-slate-500">Skill</div><div>${c.skill}</div></div>
+      <div><div class="text-slate-500">Level</div><div>${c.level}</div></div>
+      <div><div class="text-slate-500">UID</div><div class="font-mono">${c.uid}</div></div>
+      <div><div class="text-slate-500">Date</div><div>${c.date}</div></div>
+      <div class="text-right">
+        <button class="px-3 py-1.5 rounded-lg bg-slate-900 text-white"
+          onclick='downloadJson(${JSON.stringify(c)})'>Download JSON</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function downloadJson(c) {
+  const blob = new Blob([JSON.stringify(c, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = c.uid + ".json";
+  a.click();
+}
+</script>
+</body>
+</html>
