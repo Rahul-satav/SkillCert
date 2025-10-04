@@ -315,58 +315,66 @@ function makeUID(n=8){
   return o;
 }
 
-/* ---------- Mobile-safe PDF export: render a fixed A4 clone off-screen ---------- */
-function downloadPDF () {
-  const src = document.getElementById('certCard');
+/* ---------- Mobile-safe PDF export (fixed A4 visible clone) ---------- */
+function downloadPDF() {
+  const original = document.getElementById('certCard');
 
-  // create off-screen A4 clone (prevents cropping / blank pdf on phones)
-  const clone = src.cloneNode(true);
-  clone.id = 'certCardClone';
+  // Clone certificate and render it ON-SCREEN (but invisible) so it has real size
+  const clone = original.cloneNode(true);
+  clone.id = 'certClone';
   Object.assign(clone.style, {
-    width: '794px',           // A4 width @ 96dpi
+    width: '794px',           // A4 width @ ~96 dpi
     minHeight: '1123px',      // A4 height
-    boxSizing: 'border-box',
     padding: '40px',
-    position: 'absolute',
-    left: '-10000px',
+    boxSizing: 'border-box',
+    background: '#ffffff',
+    position: 'fixed',
     top: '0',
-    margin: '0',
-    maxWidth: 'none',
-    overflow: 'hidden',
-    background: '#ffffff'
+    left: '0',
+    zIndex: '-1',
+    opacity: '0',
+    pointerEvents: 'none'
   });
   document.body.appendChild(clone);
 
-  const opts = {
-    margin: 0,
-    filename: 'SkillCert_Certificate.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      scrollX: 0,
-      scrollY: 0,
-      windowWidth: 794,
-      windowHeight: 1123
-    },
-    jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' },
-    pagebreak: { mode: ['css','avoid-all'] }
-  };
+  // Give Tailwind/fonts/layout a moment to paint before capture
+  setTimeout(() => {
+    const opts = {
+      margin: 0,
+      filename: 'SkillCert_Certificate.pdf',
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: 794,
+        windowHeight: 1123
+      },
+      jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
 
-  window.scrollTo(0,0);
+    window.scrollTo(0, 0);
 
-  html2pdf()
-    .from(clone)
-    .set(opts)
-    .save()
-    .finally(()=> clone.remove());
+    html2pdf()
+      .from(clone)
+      .set(opts)
+      .save()
+      .then(() => clone.remove())
+      .catch(err => {
+        console.error('PDF generation failed:', err);
+        clone.remove();
+      });
+  }, 600); // increase to 800–1000ms if some devices still show blank pdf
 }
 
 /* Manual download button */
 downloadBtn?.addEventListener('click', downloadPDF);
 
 /* Retake */
-retakeBtn.addEventListener("click", ()=> location.reload());
+retakeBtn.addEventListener('click', () => location.reload());
+
 </script>
 </body>
 </html>
